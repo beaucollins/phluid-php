@@ -16,6 +16,14 @@ class App {
     $this->router = new Router();
     
   }
+  
+  public function run(){
+    
+    $request = Request::fromServer();
+    $response = $this->serve( $request );
+    echo $response->getRawResponse();
+    
+  }
     
   public function route( $closure ){
     
