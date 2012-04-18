@@ -4,22 +4,23 @@ require_once 'Classes/App.php';
 
 class AppTest extends PHPUnit_Framework_TestCase {
   
+  
   public function setUp(){
     
     $this->app = new App();
+    $this->app->get( '/', function( $request, $response ){
+      $response->renderString('Hello World');
+    } );
     
   }
   
   public function testAppRoute(){
     
-    $this->app->get( '/', function( $request, $response ){
-      $response->renderString('hello');
-    } );
     
     $request = new Request( 'GET', '/', array() );
     $response = $this->app->serve( $request );
     
-    $this->assertSame( 'hello', $response->getRawResponse() );
+    $this->assertSame( 'Hello World', $response->getRawResponse() );
     
   }
   

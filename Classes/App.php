@@ -7,9 +7,12 @@ require 'Response.php';
 class App {
   
   private $router;
+  public $prefix = "";
   
-  public function __construct(){
+  public function __construct( $options = array() ){
     
+    $this->prefix = $options['prefix'] ? $options['prefix'] : "";
+
     $this->router = new Router();
     
   }
@@ -31,12 +34,12 @@ class App {
     
   public function serve( $request ){
 
+    $request = $request->withPrefix( $this->prefix );
     $route = $this->router->find( $request );
-    $closure = $route['closure'];
     
     $response = new Response();
     
-    $closure( $request, $response );
+    $route( $request, $response );
     
     return $response;
     
