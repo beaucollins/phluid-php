@@ -11,7 +11,8 @@ class GlobalTest extends PHPUnit_Framework_TestCase {
       $response->renderString( 'awesome' );
     });
     
-    $response = $app->serve( 'GET', '/' );
+    $request = new Request( 'GET', '/' );
+    $response = $app->serve( $request );
     
     $this->assertSame( 'awesome', $response->getRawResponse() );
     

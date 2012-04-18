@@ -29,14 +29,12 @@ class App {
   }
   
     
-  public function serve( $method, $path ){
+  public function serve( $request ){
 
-    $route = $this->router->find( $method, $path );
+    $route = $this->router->find( $request );
     $closure = $route['closure'];
     
-    $request = new Request();
     $response = new Response();
-    
     
     $closure( $request, $response );
     

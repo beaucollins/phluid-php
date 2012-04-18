@@ -4,9 +4,9 @@ class Router {
   
   private $routes = array();
     
-  public function find( $method, $path ){
+  public function find( $request ){
     foreach( $this->routes as $route ){
-      if ( $route['method'] == $method && $route['path'] == $path ) {
+      if ( $route['method'] == $request->method && $route['path'] == $request->path ) {
         return $route;
       }
     }

@@ -16,7 +16,8 @@ class AppTest extends PHPUnit_Framework_TestCase {
       $response->renderString('hello');
     } );
     
-    $response = $this->app->serve( 'GET', '/' );
+    $request = new Request( 'GET', '/', array() );
+    $response = $this->app->serve( $request );
     
     $this->assertSame( 'hello', $response->getRawResponse() );
     
@@ -26,12 +27,12 @@ class AppTest extends PHPUnit_Framework_TestCase {
     
     $this->app->get( '/awesome', new HelloWorldAction );
     
-    $response = $this->app->serve( 'GET', '/awesome' );
+    $request = new Request( 'GET', '/awesome', array() );
+    $response = $this->app->serve( $request );
     
     $this->assertSame( 'Hello World!', $response->getRawResponse() );
     
   }
-  
   
 }
 
