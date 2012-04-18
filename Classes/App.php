@@ -11,7 +11,7 @@ class App {
   
   public function __construct( $options = array() ){
     
-    $this->prefix = $options['prefix'] ? $options['prefix'] : "";
+    $this->prefix = array_key_exists('prefix', $options) ? $options['prefix'] : "";
 
     $this->router = new Router();
     
