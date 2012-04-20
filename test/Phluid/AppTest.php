@@ -25,7 +25,7 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
   }
   
   public function testFullRequest(){
-    Phluid_View::$directory = realpath('.') . '/Tests/Views';
+    Phluid_View::$directory = realpath('.') . '/test/Views';
     $response = $this->app
       ->get( '/users/:username' , function( $request, $response ){
         $response->render( 'profile', array( "username" => $request->param( 'username' ) ) );

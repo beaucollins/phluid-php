@@ -6,14 +6,14 @@ require_once 'lib/Phluid/View.php';
 class Phluid_ViewTest extends PHPUnit_Framework_TestCase {
   
   public function setUp(){
-    Phluid_View::$directory = realpath('.') . '/Tests/Views';
+    Phluid_View::$directory = realpath('.') . '/test/Views';
   }
   
   public function testPath(){
     
     $view = new Phluid_View( 'home' );
     
-    $this->assertSame( realpath('.') . '/Tests/Views/home.php', $view->fullPath() );
+    $this->assertSame( realpath('.') . '/test/Views/home.php', $view->fullPath() );
     $this->assertFileExists( $view->fullPath() );
   }
   
