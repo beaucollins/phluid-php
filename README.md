@@ -8,7 +8,7 @@ Example
 
     <?php
     
-    require 'Phluid/App.php';
+    require 'lib/Phluid.php';
     
     $app = new Phluid_App();
     
