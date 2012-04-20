@@ -1,6 +1,6 @@
 <?php
 
-class Route {
+class Phluid_Route {
   
   private $closure;
   private $methods;

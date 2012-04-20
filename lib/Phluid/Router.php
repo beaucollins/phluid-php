@@ -2,7 +2,7 @@
 
 require 'Route.php';
 
-class Router {
+class Phluid_Router {
   
   private $routes = array();
     
@@ -24,7 +24,7 @@ class Router {
   
   public function route( $method, $path, $closure ){
           
-    array_push( $this->routes, new Route( $method, $path, $closure ) );
+    array_push( $this->routes, new Phluid_Route( $method, $path, $closure ) );
       
     return $this;
       
@@ -32,7 +32,7 @@ class Router {
   
   public function prepend( $method, $path, $closure ){
     
-    array_unshift( $this->routes, new Route( $method, $path, $closure ) );
+    array_unshift( $this->routes, new Phluid_Route( $method, $path, $closure ) );
     
     return $this;
     

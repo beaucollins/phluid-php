@@ -5,8 +5,7 @@ require 'Router.php';
 require 'Request.php';
 require 'Response.php';
 
-class App {
-  
+class Phluid_App {
   private $router;
   private $middleware = array();
   public $prefix = "";
@@ -15,7 +14,7 @@ class App {
     
     $this->prefix = array_key_exists('prefix', $options) ? $options['prefix'] : "";
 
-    $this->router = new Router();
+    $this->router = new Phluid_Router();
     
   }
   
@@ -23,7 +22,7 @@ class App {
     
     ob_start();
     
-    $request = Request::fromServer()->withPrefix( $this->prefix );    
+    $request = Phluid_Request::fromServer()->withPrefix( $this->prefix );    
     $response = $this->serve( $request );
     
     $this->sendResponseHeaders( $response );
@@ -66,7 +65,7 @@ class App {
   
   public function serve( $request, $response = null, $routes = null ){
     
-    if ( !$response ) $response = new Response( $request );
+    if ( !$response ) $response = new Phluid_Response( $request );
     
     if( !$routes ) $routes = $this->matching( $request );
     $route = array_shift( $routes );

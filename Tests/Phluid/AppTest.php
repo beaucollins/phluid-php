@@ -1,13 +1,13 @@
 <?php
 
-require_once 'Classes/App.php';
+require_once 'lib/Phluid/App.php';
 
-class AppTest extends PHPUnit_Framework_TestCase {
+class Phluid_AppTest extends PHPUnit_Framework_TestCase {
   
   
   public function setUp(){
     
-    $this->app = new App();
+    $this->app = new Phluid_App();
     $this->app->get( '/', function( $request, $response ){
       $response->renderString('Hello World');
     } );
@@ -17,7 +17,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
   public function testAppRoute(){
     
     
-    $request = new Request( 'GET', '/', array() );
+    $request = new Phluid_Request( 'GET', '/', array() );
     $response = $this->app->serve( $request );
     
     $this->assertSame( 'Hello World', $response->getBody() );
@@ -25,12 +25,12 @@ class AppTest extends PHPUnit_Framework_TestCase {
   }
   
   public function testFullRequest(){
-    View::$directory = realpath('.') . '/Tests/Views';
+    Phluid_View::$directory = realpath('.') . '/Tests/Views';
     $response = $this->app
       ->get( '/users/:username' , function( $request, $response ){
         $response->render( 'profile', array( "username" => $request->param( 'username' ) ) );
       } )
-      ->serve( new Request( 'GET', '/users/beau' ) );
+      ->serve( new Phluid_Request( 'GET', '/users/beau' ) );
     
       $this->assertSame( 'Hello beau', $response->getBody() );
       
@@ -40,7 +40,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     
     $this->app->get( '/awesome', new HelloWorldAction );
     
-    $request = new Request( 'GET', '/awesome', array() );
+    $request = new Phluid_Request( 'GET', '/awesome', array() );
     $response = $this->app->serve( $request );
     
     $this->assertSame( 'Hello World!', $response->getBody() );
@@ -51,7 +51,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     
     $this->app->inject( new Lol() );
     
-    $request = new Request( 'GET', '/' );
+    $request = new Phluid_Request( 'GET', '/' );
     
     $response = $this->app->serve( $request );
     

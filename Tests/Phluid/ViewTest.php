@@ -1,17 +1,17 @@
 <?php
 
-require_once 'Classes/View.php';
+require_once 'lib/Phluid/View.php';
 
 
-class ViewTest extends PHPUnit_Framework_TestCase {
+class Phluid_ViewTest extends PHPUnit_Framework_TestCase {
   
   public function setUp(){
-    View::$directory = realpath('.') . '/Tests/Views';
+    Phluid_View::$directory = realpath('.') . '/Tests/Views';
   }
   
   public function testPath(){
     
-    $view = new View( 'home' );
+    $view = new Phluid_View( 'home' );
     
     $this->assertSame( realpath('.') . '/Tests/Views/home.php', $view->fullPath() );
     $this->assertFileExists( $view->fullPath() );
@@ -19,10 +19,10 @@ class ViewTest extends PHPUnit_Framework_TestCase {
   
   public function testCompilation(){
     
-    $hello_world = new View( 'hello' );
+    $hello_world = new Phluid_View( 'hello' );
     $this->assertSame( 'Hello World', $hello_world->render() );
     
-    $greeting = new View( 'home' );
+    $greeting = new Phluid_View( 'home' );
     
     $this->assertSame( 'Hi Beau, how are you?', $greeting->render( array( 'name' => 'Beau' ) ) );
     
@@ -30,7 +30,7 @@ class ViewTest extends PHPUnit_Framework_TestCase {
   
   public function testLayout(){
       
-    $view = new View( 'hello', 'layout' );
+    $view = new Phluid_View( 'hello', 'layout' );
     
     $this->assertNotNull( $view->getLayout() );
     $this->assertSame( '<html>Hello World</html>', $view->render() );

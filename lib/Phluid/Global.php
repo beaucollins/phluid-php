@@ -2,7 +2,7 @@
 
 require_once 'App.php';
 
-$app = new App();
+$app = new Phluid_App();
 
 function route( $method, $path, $closure ){
   global $app;

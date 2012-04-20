@@ -7,7 +7,7 @@
  * 
  * A layout is simply a view that has an `echo $content` somewhere in it.
  */
-class View {
+class Phluid_View {
   
   public static $directory; // the full path where the views will be stored
   public static $default_layout; // the default layout
@@ -51,7 +51,7 @@ class View {
       $layout = self::$default_layout;
     }
     if ( $layout ) {
-      return new View( $layout, false );
+      return new Phluid_View( $layout, false );
     }
   }
   

@@ -2,7 +2,7 @@
 
 require_once 'View.php';
 
-class Response {
+class Phluid_Response {
 
   private $raw_body;
   private $status_code = 200;
@@ -14,11 +14,11 @@ class Response {
   }
   
   public function render( $template, $locals = array(), $options = array() ){
-    $layout = Utils::array_val( $options, 'template' );
-    $status = Utils::array_val( $options, 'status', 200 );
-    $content_type = Utils::array_val($options, 'content-type', 'text/html' );
+    $layout = Phluid_Utils::array_val( $options, 'template' );
+    $status = Phluid_Utils::array_val( $options, 'status', 200 );
+    $content_type = Phluid_Utils::array_val($options, 'content-type', 'text/html' );
     $locals['request'] = $this->request;
-    $view = new View( $template, $layout );
+    $view = new Phluid_View( $template, $layout );
     $this->renderString( $view->render( $locals ), $content_type, $status );
   }
   

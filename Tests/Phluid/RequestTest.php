@@ -1,12 +1,12 @@
 <?php
 
-require_once 'Classes/Request.php';
+require_once 'lib/Phluid/Request.php';
 
-class RequestTest extends PHPUnit_Framework_TestCase {
+class Phluid_RequestTest extends PHPUnit_Framework_TestCase {
   
   public function testPrefix(){
   
-    $request = new Request('GET', '/something/other/');
+    $request = new Phluid_Request('GET', '/something/other/');
     $new_request = $request->withPrefix( '/something' );
     
     $this->assertSame( '/other/', $new_request->path );
@@ -15,7 +15,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
   
   public function testAccessors(){
     
-    $request = new Request( 'GET', '/' );
+    $request = new Phluid_Request( 'GET', '/' );
     
     $request->something = "Hi";
     
@@ -25,7 +25,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
   
   public function testParsePath(){
     
-    $request = new Request( 'GET', '/user/beau' );
+    $request = new Phluid_Request( 'GET', '/user/beau' );
     
     $this->assertTrue( $request->parsePath( '/user/:name' ) );
     $this->assertArrayHasKey( 'name', $request->params );
@@ -33,14 +33,14 @@ class RequestTest extends PHPUnit_Framework_TestCase {
   }
   
   public function testRegexCompiling(){
-    $request = new Request( 'GET', '/user/beau' );
+    $request = new Phluid_Request( 'GET', '/user/beau' );
     
     $this->assertSame( 1, preg_match("#/user(/(?<name>[^/]+))?#", '/user' ) );
     $this->assertSame( "#/user(/(?<name>[^/]+))?#", $request->compileRegex( '/user/:name?' ) );
   }
   
   public function testSplatRoutes(){
-    $request = new Request( 'GET', '/user/beau' );
+    $request = new Phluid_Request( 'GET', '/user/beau' );
     
     
     $this->assertTrue( $request->parsePath( '/user/(.*)' ) );
@@ -48,7 +48,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
     
     $this->assertTrue( $request->parsePath( '/user/*' ) );
     
-    $request2 = new Request( 'GET', '/user/' );
+    $request2 = new Phluid_Request( 'GET', '/user/' );
     $this->assertTrue( $request2->parsePath( '/user/:name?' ) );
     $this->assertTrue( $request2->parsePath( '/user' ) );
     

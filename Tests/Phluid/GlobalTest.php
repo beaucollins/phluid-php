@@ -1,8 +1,8 @@
 <?php
 
-require_once 'Classes/Global.php';
+require_once 'lib/Phluid/Global.php';
 
-class GlobalTest extends PHPUnit_Framework_TestCase {
+class Phluid_GlobalTest extends PHPUnit_Framework_TestCase {
   
   public function testGlobal(){
     global $app;
@@ -11,7 +11,7 @@ class GlobalTest extends PHPUnit_Framework_TestCase {
       $response->renderString( 'awesome' );
     });
     
-    $request = new Request( 'GET', '/' );
+    $request = new Phluid_Request( 'GET', '/' );
     $response = $app->serve( $request );
     
     $this->assertSame( 'awesome', $response->getBody() );

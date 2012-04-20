@@ -1,6 +1,6 @@
 <?php
 
-class Request {
+class Phluid_Request {
  
   var $method;
   var $path;
@@ -18,7 +18,7 @@ class Request {
       $path = $uri;
     }
     
-    $request = new Request( $_SERVER['REQUEST_METHOD'], $path, $_SERVER );
+    $request = new Phluid_Request( $_SERVER['REQUEST_METHOD'], $path, $_SERVER );
     
     return $request;
   }
@@ -91,7 +91,7 @@ class Request {
   public function withPrefix( $prefix ){
     if ( stripos( $this->path, $prefix ) === 0 ) {
       $new_path = substr( $this->path, strlen( $prefix ) );
-      return new Request( $this->method, $new_path, $this->headers );
+      return new Phluid_Request( $this->method, $new_path, $this->headers );
     } else {
       return $this;
     }
