@@ -13,6 +13,16 @@ class RequestTest extends PHPUnit_Framework_TestCase {
     
   }
   
+  public function testAccessors(){
+    
+    $request = new Request( 'GET', '/' );
+    
+    $request->something = "Hi";
+    
+    $this->assertSame( "Hi", $request->something );
+    
+  }
+  
   public function testParsePath(){
     
     $request = new Request( 'GET', '/user/beau' );

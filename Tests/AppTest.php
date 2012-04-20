@@ -20,8 +20,20 @@ class AppTest extends PHPUnit_Framework_TestCase {
     $request = new Request( 'GET', '/', array() );
     $response = $this->app->serve( $request );
     
-    $this->assertSame( 'Hello World', $response->getRawResponse() );
+    $this->assertSame( 'Hello World', $response->getBody() );
     
+  }
+  
+  public function testFullRequest(){
+    View::$directory = realpath('.') . '/Tests/Views';
+    $response = $this->app
+      ->get( '/users/:username' , function( $request, $response ){
+        $response->render( 'profile', array( "username" => $request->param( 'username' ) ) );
+      } )
+      ->serve( new Request( 'GET', '/users/beau' ) );
+    
+      $this->assertSame( 'Hello beau', $response->getBody() );
+      
   }
   
   public function testRouteActionAsObject(){
@@ -31,7 +43,22 @@ class AppTest extends PHPUnit_Framework_TestCase {
     $request = new Request( 'GET', '/awesome', array() );
     $response = $this->app->serve( $request );
     
-    $this->assertSame( 'Hello World!', $response->getRawResponse() );
+    $this->assertSame( 'Hello World!', $response->getBody() );
+    
+  }
+  
+  public function testMiddleware(){
+    
+    $this->app->inject( new Lol() );
+    
+    $request = new Request( 'GET', '/' );
+    
+    $response = $this->app->serve( $request );
+    
+    $this->assertSame( 'LOL', $response->getBody() );
+    
+    $response = $this->app->serve( $request );
+    $this->assertSame( 'Hello World', $response->getBody() );
     
   }
   
@@ -43,6 +70,21 @@ class HelloWorldAction {
   
   public function __invoke( $request, $response ){
     $response->renderString( $this->response );
+  }
+  
+}
+
+class Lol {
+  
+  var $lol = true;
+  
+  function __invoke( $req, $res, $next ){
+    if ($this->lol) {
+      $this->lol = false;
+      $res->renderString( "LOL" );
+    } else {
+      $next();
+    }
   }
   
 }

@@ -1,5 +1,6 @@
 <?php
 
+require 'Utils.php';
 require 'Router.php';
 require 'Request.php';
 require 'Response.php';
@@ -7,6 +8,7 @@ require 'Response.php';
 class App {
   
   private $router;
+  private $middleware = array();
   public $prefix = "";
   
   public function __construct( $options = array() ){
@@ -19,35 +21,61 @@ class App {
   
   public function run(){
     
-    $request = Request::fromServer();
+    ob_start();
+    
+    $request = Request::fromServer()->withPrefix( $this->prefix );    
     $response = $this->serve( $request );
-    echo $response->getRawResponse();
+    
+    $this->sendResponseHeaders( $response );
+    ob_end_clean();
+    echo $response->getBody();
     
   }
+  
+  private function sendResponseHeaders( $response ){
+    header( $response->statusHeader() );
+    $response->eachHeader( function( $name, $value ){
+      header( $name . ': ' . $value, true );
+    } );
+  }
+  
+  public function inject( $middleware ){
+    array_push( $this->middleware, $middleware );
+    return $this;
+  }
+  
+  private function matching( $request ){
+    $routes = $this->router->matching( $request );
+    return array_merge( $this->middleware, $routes );
+  }
     
-  public function route( $closure ){
+  public function route( $method, $path, $closure ){
     
-    return $this->router->route( 'GET', $path, $closure );
+    $this->router->route( $method, $path, $closure );
+    return $this;
     
   }
   
   public function get( $path, $closure ){
-    return $this->router->route( 'GET', $path, $closure );
+    return $this->route( 'GET', $path, $closure );
   }
   
   public function post( $path, $closure ){
-    return $this->router->route( 'POST', $path, $closure );
+    return $this->route( 'POST', $path, $closure );
   }
   
+  public function serve( $request, $response = null, $routes = null ){
     
-  public function serve( $request ){
-
-    $request = $request->withPrefix( $this->prefix );
-    $route = $this->router->find( $request );
+    if ( !$response ) $response = new Response();
     
-    $response = new Response();
+    if( !$routes ) $routes = $this->matching( $request );
+    $route = array_shift( $routes );
+    $app = $this;
+    $next = function() use( $app, $request, $response, $routes ){
+      $app->serve( $request, $response, $routes );
+    };
     
-    $route( $request, $response );
+    $route( $request, $response, $next );
     
     return $response;
     

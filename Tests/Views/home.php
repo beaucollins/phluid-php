@@ -1,0 +1,1 @@
+Hi <?php echo $name; ?>, how are you?

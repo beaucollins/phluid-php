@@ -6,6 +6,7 @@ class Request {
   var $path;
   var $headers;
   var $params;
+  var $memo = array();
  
   public static function fromServer(){
     
@@ -28,6 +29,15 @@ class Request {
     $this->headers = $headers;
   }
   
+  public function __get( $key ){
+    if ( array_key_exists( $key, $this->memo ) ) {
+      return $this->memo[$key];
+    }
+  }
+  
+  public function __set( $key, $value ){
+    $this->memo[$key] = $value;
+  }
   
   /**
    * Searches for a parameter, first from the path, then from get, then from post

@@ -14,7 +14,7 @@ class GlobalTest extends PHPUnit_Framework_TestCase {
     $request = new Request( 'GET', '/' );
     $response = $app->serve( $request );
     
-    $this->assertSame( 'awesome', $response->getRawResponse() );
+    $this->assertSame( 'awesome', $response->getBody() );
     
     
   }
