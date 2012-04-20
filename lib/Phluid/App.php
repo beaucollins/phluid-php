@@ -4,20 +4,30 @@ require 'Utils.php';
 require 'Router.php';
 require 'Request.php';
 require 'Response.php';
+require 'Settings.php';
 
 class Phluid_App {
+  
   private $router;
   private $middleware = array();
-  public $prefix = "";
+  private $settings;
   
   public function __construct( $options = array() ){
     
-    $this->prefix = array_key_exists('prefix', $options) ? $options['prefix'] : "";
-
+    $defaults = array( 'view_path' => realpath('.') . '/views' );
+    $this->settings = new Phluid_Settings( array_merge( $defaults, $options ) );
     $this->router = new Phluid_Router();
     
   }
   
+  public function __get( $key ){
+    return $this->settings->__get( $key );
+  }
+  
+  public function __set( $key, $value ){
+    return $this->settings->__set( $key, $value );
+  }
+    
   public function run(){
     
     ob_start();
@@ -28,6 +38,27 @@ class Phluid_App {
     $this->sendResponseHeaders( $response );
     ob_end_clean();
     echo $response->getBody();
+    
+  }
+  
+  public function serve( $request, $response = null, $routes = null ){
+    
+    if ( !$response ) $response = new Phluid_Response( $this, $request );
+    
+    if( !$routes ) $routes = $this->matching( $request );
+    $route = array_shift( $routes );
+    $app = $this;
+    $next = function() use( $app, $request, $response, $routes ){
+      if ( count( $routes ) == 0 ) {
+        throw new Exception("No more routes");
+      } else {
+        $app->serve( $request, $response, $routes );
+      }
+    };
+    
+    $route( $request, $response, $next );
+    
+    return $response;
     
   }
   
@@ -61,23 +92,6 @@ class Phluid_App {
   
   public function post( $path, $closure ){
     return $this->route( 'POST', $path, $closure );
-  }
-  
-  public function serve( $request, $response = null, $routes = null ){
-    
-    if ( !$response ) $response = new Phluid_Response( $request );
-    
-    if( !$routes ) $routes = $this->matching( $request );
-    $route = array_shift( $routes );
-    $app = $this;
-    $next = function() use( $app, $request, $response, $routes ){
-      $app->serve( $request, $response, $routes );
-    };
-    
-    $route( $request, $response, $next );
-    
-    return $response;
-    
   }
   
 }

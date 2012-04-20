@@ -8,17 +8,19 @@ class Phluid_Response {
   private $status_code = 200;
   private $headers = array();
   private $request;
+  private $app;
   
-  function __construct( $request ){
+  function __construct( $app, $request ){
+    $this->app = $app;
     $this->request = $request;
   }
   
   public function render( $template, $locals = array(), $options = array() ){
-    $layout = Phluid_Utils::array_val( $options, 'template' );
+    $layout = Phluid_Utils::array_val( $options, 'layout', $this->app->default_layout );
     $status = Phluid_Utils::array_val( $options, 'status', 200 );
     $content_type = Phluid_Utils::array_val($options, 'content-type', 'text/html' );
     $locals['request'] = $this->request;
-    $view = new Phluid_View( $template, $layout );
+    $view = new Phluid_View( $template, $layout, $this->app->view_path );
     $this->renderString( $view->render( $locals ), $content_type, $status );
   }
   

@@ -14,6 +14,15 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
     
   }
   
+  public function testSettings(){
+    
+    $this->assertSame( $this->app->view_path, realpath('.') . '/views' );
+    
+    $this->app->prefix = 'test';
+    $this->assertSame( 'test', $this->app->prefix );
+    
+  }
+  
   public function testAppRoute(){
     
     
@@ -25,7 +34,8 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
   }
   
   public function testFullRequest(){
-    Phluid_View::$directory = realpath('.') . '/test/Views';
+    
+    $this->app->view_path = realpath('.') . '/test/Views';
     $response = $this->app
       ->get( '/users/:username' , function( $request, $response ){
         $response->render( 'profile', array( "username" => $request->param( 'username' ) ) );

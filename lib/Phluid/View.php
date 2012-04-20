@@ -8,10 +8,7 @@
  * A layout is simply a view that has an `echo $content` somewhere in it.
  */
 class Phluid_View {
-  
-  public static $directory; // the full path where the views will be stored
-  public static $default_layout; // the default layout
-  
+    
   private $template;
   private $path;
   private $layout;
@@ -19,11 +16,7 @@ class Phluid_View {
   function __construct( $template, $layout = null, $path = null ){
     $this->template = $template;
     $this->layout = $layout;
-    if ( !$path ) {
-      $this->path = self::$directory;
-    } else {
-      $this->path = $path;
-    }
+    $this->path = $path;
   }
   
   /**
@@ -46,12 +39,8 @@ class Phluid_View {
   }
   
   public function getLayout(){
-    $layout = $this->layout;
-    if ( $this->layout === null ) {
-      $layout = self::$default_layout;
-    }
-    if ( $layout ) {
-      return new Phluid_View( $layout, false );
+    if ( $this->layout ) {
+      return new Phluid_View( $this->layout, null, $this->path );
     }
   }
   
