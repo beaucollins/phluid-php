@@ -66,7 +66,7 @@ class App {
   
   public function serve( $request, $response = null, $routes = null ){
     
-    if ( !$response ) $response = new Response();
+    if ( !$response ) $response = new Response( $request );
     
     if( !$routes ) $routes = $this->matching( $request );
     $route = array_shift( $routes );

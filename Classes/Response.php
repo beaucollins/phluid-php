@@ -7,15 +7,17 @@ class Response {
   private $raw_body;
   private $status_code = 200;
   private $headers = array();
+  private $request;
   
-  function __construct(){
-    
+  function __construct( $request ){
+    $this->request = $request;
   }
   
   public function render( $template, $locals = array(), $options = array() ){
     $layout = Utils::array_val( $options, 'template' );
     $status = Utils::array_val( $options, 'status', 200 );
     $content_type = Utils::array_val($options, 'content-type', 'text/html' );
+    $locals['request'] = $this->request;
     $view = new View( $template, $layout );
     $this->renderString( $view->render( $locals ), $content_type, $status );
   }
