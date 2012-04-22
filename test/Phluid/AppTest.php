@@ -72,6 +72,41 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
     
   }
   
+  public function testNoMatchingResponse(){
+    
+    $request = new Phluid_Request( 'GET', '/doesnt-exist' );
+    try {
+      $response = $this->app->serve( $request );
+    } catch( Exception $e ){
+      $this->assertSame( 'No more routes', $e->getMessage() );
+    }
+    
+  }
+  
+  public function testExceptionHandler(){
+    $app = new Phluid_App();
+    $handler = new HandleException();
+    $app->inject( $handler );
+    
+    $request = new Phluid_Request( 'GET', '/doesnt-exist' );
+    $matches = $app->matching( $request );
+    $this->assertSame( 1, count( $matches ) );
+    $this->assertSame( $handler, $matches[0] );
+    
+    $response = $app( $request );
+    
+    $this->assertSame( 'Uh, Oh', $response->getBody() );
+    
+  }
+  
+  public function testPostRequest(){
+    
+    $this->app->post( '/robot', function( $request, $response ){
+      
+    } );
+    
+  }
+  
 }
 
 class HelloWorldAction {
@@ -80,6 +115,22 @@ class HelloWorldAction {
   
   public function __invoke( $request, $response ){
     $response->renderString( $this->response );
+  }
+  
+}
+
+class HandleException {
+  
+  public function __invoke( $request, $response, $next ){
+    try {
+      $next();
+    } catch (Phluid_Exception $e) {
+      $response->renderString( 'Uh, Oh', 'text/plain', $e->getCode() );
+    }
+  }
+  
+  public function __toString(){
+    return __CLASS__ . ": what's wrong?";
   }
   
 }
@@ -95,6 +146,10 @@ class Lol {
     } else {
       $next();
     }
+  }
+  
+  function __toString(){
+    return __CLASS__ . ' : ' . ($this->lol ? 'will LOL' : 'wont LOL' );
   }
   
 }

@@ -39,6 +39,10 @@ class Phluid_Request {
     $this->memo[$key] = $value;
   }
   
+  public function __toString(){
+    return $this->method . ' ' . $this->path;
+  }
+  
   /**
    * Searches for a parameter, first from the path, then from get, then from post
    *

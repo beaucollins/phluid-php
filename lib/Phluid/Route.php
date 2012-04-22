@@ -26,4 +26,8 @@ class Phluid_Route {
     
   }
   
+  public function __toString(){
+    return implode( ',', $this->methods ) . ' ' . $this->path;
+  }
+  
 }

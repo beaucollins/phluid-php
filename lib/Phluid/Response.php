@@ -67,4 +67,14 @@ class Phluid_Response {
   public function getBody(){
     return $this->raw_body;
   }
+  
+  public function setBody( $body ){
+    $this->raw_body = $body;
+  }
+  
+  public function __toString(){
+    return $this->statusHeader();
+  }
+  
+  
 }

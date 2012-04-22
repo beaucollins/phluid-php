@@ -5,6 +5,7 @@ require 'Router.php';
 require 'Request.php';
 require 'Response.php';
 require 'Settings.php';
+require 'Exceptions.php';
 
 class Phluid_App {
   
@@ -41,25 +42,30 @@ class Phluid_App {
     
   }
   
-  public function serve( $request, $response = null, $routes = null ){
+  public function serve( $request, $response = null, $handlers = null ){
     
     if ( !$response ) $response = new Phluid_Response( $this, $request );
-    
-    if( !$routes ) $routes = $this->matching( $request );
-    $route = array_shift( $routes );
-    $app = $this;
-    $next = function() use( $app, $request, $response, $routes ){
-      if ( count( $routes ) == 0 ) {
-        throw new Exception("No more routes");
-      } else {
-        $app->serve( $request, $response, $routes );
-      }
-    };
-    
-    $route( $request, $response, $next );
+    if( !$handlers ) $handlers = $this->matching( $request );
+    $handler = array_shift( $handlers );
+    if ( $handler ) {
+      $app = $this;
+      $next = function() use( $app, $request, $response, $handlers ){
+        if ( count( $handlers ) == 0) {
+          throw new Phluid_Exception_NotFound( "No more routes" );
+        }
+        $app->serve( $request, $response, $handlers );
+      };
+      $handler( $request, $response, $next );
+    } else {
+      throw new Phluid_Exception_NotFound( "No more routes" );
+    }
     
     return $response;
     
+  }
+  
+  public function __invoke( $request ){
+    return $this->serve( $request );
   }
   
   private function sendResponseHeaders( $response ){
@@ -74,7 +80,7 @@ class Phluid_App {
     return $this;
   }
   
-  private function matching( $request ){
+  public function matching( $request ){
     $routes = $this->router->matching( $request );
     return array_merge( $this->middleware, $routes );
   }
