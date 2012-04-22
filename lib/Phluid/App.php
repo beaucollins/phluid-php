@@ -1,11 +1,11 @@
 <?php
 
-require 'Utils.php';
-require 'Router.php';
-require 'Request.php';
-require 'Response.php';
-require 'Settings.php';
-require 'Exceptions.php';
+require_once 'Utils.php';
+require_once 'Router.php';
+require_once 'Request.php';
+require_once 'Response.php';
+require_once 'Settings.php';
+require_once 'Exceptions.php';
 
 class Phluid_App {
   

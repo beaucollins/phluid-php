@@ -38,4 +38,15 @@ class Phluid_ViewTest extends PHPUnit_Framework_TestCase {
     
   }
   
+  public function testMissingViewException(){
+    $view = new Phluid_View( 'gone' );
+    try {
+      $view->render();
+    } catch ( Phluid_Exception_MissingView $e) {
+      
+      $this->assertSame( "Missing template gone", $e->getMessage() );
+      
+    }
+  }
+  
 }
