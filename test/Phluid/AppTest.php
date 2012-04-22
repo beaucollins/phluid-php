@@ -130,7 +130,7 @@ class HandleException {
   }
   
   public function __toString(){
-    return __CLASS__ . ": what's wrong?";
+    return __CLASS__;
   }
   
 }
