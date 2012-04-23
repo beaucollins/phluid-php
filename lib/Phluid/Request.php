@@ -7,6 +7,7 @@ class Phluid_Request {
   var $headers;
   var $params;
   var $memo = array();
+  var $body;
  
   public static function fromServer(){
     
@@ -19,14 +20,28 @@ class Phluid_Request {
     }
     
     $request = new Phluid_Request( $_SERVER['REQUEST_METHOD'], $path, $_SERVER );
+    $request->setBody( @file_get_contents('php://input') );
     
     return $request;
   }
   
-  public function __construct( $method, $path, $headers = array() ){
+  public function __construct( $method, $path, $headers = array(), $body=null ){
     $this->method = $method;
     $this->path = $path;
     $this->headers = $headers;
+    $this->body = $body;
+  }
+  
+  public function getBody(){
+    return $this->body;
+  }
+  
+  public function setBody( $body ){
+    $this->body = $body;
+  }
+  
+  public function getHeader( $key ){
+    Phluid_Utils::array_val( $this->headers, strtoupper($key) );
   }
   
   public function __get( $key ){
@@ -95,7 +110,7 @@ class Phluid_Request {
   public function withPrefix( $prefix ){
     if ( stripos( $this->path, $prefix ) === 0 ) {
       $new_path = substr( $this->path, strlen( $prefix ) );
-      return new Phluid_Request( $this->method, $new_path, $this->headers );
+      return new Phluid_Request( $this->method, $new_path, $this->headers, $this->body );
     } else {
       return $this;
     }

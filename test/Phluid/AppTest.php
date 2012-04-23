@@ -102,8 +102,15 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
   public function testPostRequest(){
     
     $this->app->post( '/robot', function( $request, $response ){
-      
+      $response->renderString( strlen( $request->getBody() ) );
     } );
+    
+    $request = new Phluid_Request( 'POST', '/robot' );
+    $request->setBody( "?something=awesome" );
+     
+    $response = $this->app->serve( $request );
+    
+    $this->assertSame( '18', $response->getBody() );
     
   }
   

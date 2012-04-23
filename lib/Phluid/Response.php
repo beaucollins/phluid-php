@@ -51,12 +51,12 @@ class Phluid_Response {
   
   public function redirect( $url ){
     $this->setHeader( "Location", $url );
-    $this->raw_body = null;
+    $this->raw_body = "Redirecting: $url";
   }
   
   public function renderString( $string, $content_type="text/plain", $status = 200 ){
     $this->status_code = $status;
-    $this->raw_body = $string;
+    $this->raw_body = (string) $string;
     $this->setHeader( 'Content-Type', $content_type );
   }
   

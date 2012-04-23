@@ -42,7 +42,6 @@ class Phluid_RequestTest extends PHPUnit_Framework_TestCase {
   public function testSplatRoutes(){
     $request = new Phluid_Request( 'GET', '/user/beau' );
     
-    
     $this->assertTrue( $request->parsePath( '/user/(.*)' ) );
     $this->assertContains( 'beau', $request->params );
     
@@ -52,6 +51,12 @@ class Phluid_RequestTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue( $request2->parsePath( '/user/:name?' ) );
     $this->assertTrue( $request2->parsePath( '/user' ) );
     
+  }
+  
+  public function testBody(){
+    $request = new Phluid_Request( 'POST', '/' );
+    $request->setBody( "Hello world" );
+    $this->assertSame( "Hello world", $request->getBody() );
   }
     
 }

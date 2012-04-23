@@ -1,6 +1,8 @@
 <?php
 
-class Phluid_Route {
+require_once 'Middleware.php';
+
+class Phluid_Route implements Phluid_Middleware {
   
   private $closure;
   private $methods;
@@ -20,7 +22,7 @@ class Phluid_Route {
     return false;
   }
     
-  public function __invoke( $request, $response ){
+  public function __invoke( $request, $response, $next = null ){
     $closure = $this->closure;
     $closure( $request, $response);
     
