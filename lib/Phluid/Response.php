@@ -60,6 +60,10 @@ class Phluid_Response {
     $this->setHeader( 'Content-Type', $content_type );
   }
   
+  public function renderText( $string, $content_type="text/plain", $status = 200 ){
+    $this->renderString( $string, $content_type, $status );
+  }
+  
   public function renderJSON( $object, $status = 200 ){
     $this->renderString( json_encode($object), "application/json", $status );
   }
