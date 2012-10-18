@@ -9,6 +9,13 @@ class Phluid_Request {
   var $memo = array();
   var $body;
  
+  /**
+   * Static method that constructs a Phluid_Request from global $_SERVER 
+   * variables for use with Apache/Nginx.
+   *
+   * @return Phluid_Request
+   * @author Beau Collins
+   */
   public static function fromServer(){
     
     $uri = $_SERVER['REQUEST_URI'];
@@ -25,6 +32,15 @@ class Phluid_Request {
     return $request;
   }
   
+  /**
+   * Constructs a Phluid_Request
+   *
+   * @param string $method HTTP Method
+   * @param string $path Path for the HTTP request
+   * @param string $headers Array of HTTP request headers
+   * @param string $body Body for the HTTP request
+   * @author Beau Collins
+   */
   public function __construct( $method, $path, $headers = array(), $body=null ){
     $this->method = $method;
     $this->path = $path;
@@ -41,7 +57,7 @@ class Phluid_Request {
   }
   
   public function getHeader( $key ){
-    Phluid_Utils::array_val( $this->headers, strtoupper($key) );
+    return Phluid_Utils::array_val( $this->headers, strtoupper($key) );
   }
   
   public function __get( $key ){

@@ -8,7 +8,7 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
   public function setUp(){
     
     $this->app = new Phluid_App();
-    $this->app->get( '/', function( $request, $response ){
+    $this->app->get( '/', function( $request, $response, $next ){
       $response->renderString('Hello World');
     } );
     
@@ -78,7 +78,7 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
     try {
       $response = $this->app->serve( $request );
     } catch( Exception $e ){
-      $this->assertSame( 'No more routes', $e->getMessage() );
+      $this->assertSame( 'No route matching GET /doesnt-exist', $e->getMessage() );
     }
     
   }
@@ -89,12 +89,8 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
     $app->inject( $handler );
     
     $request = new Phluid_Request( 'GET', '/doesnt-exist' );
-    $matches = $app->matching( $request );
-    $this->assertSame( 1, count( $matches ) );
-    $this->assertSame( $handler, $matches[0] );
-    
     $response = $app( $request );
-    
+        
     $this->assertSame( 'Uh, Oh', $response->getBody() );
     
   }

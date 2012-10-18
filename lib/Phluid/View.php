@@ -34,7 +34,7 @@ class Phluid_View {
     $content = ob_get_clean();
     
     if( $included === false )
-      throw new Phluid_Exception_MissingView( "Missing template " . $this->template );
+      throw new Phluid_Exception_MissingView( "Missing template " . $this->fullPath() );
     
     if ( $layout = $this->getLayout() ) {
       $content = $layout->render( array( 'content' => $content ));

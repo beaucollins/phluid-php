@@ -14,7 +14,7 @@ class Phluid_Middleware_JsonBodyParser implements Phluid_Middleware {
       try {
         $request->setBody( json_decode( $request->getBody(), $this->array ) );
       } catch (Exception $e) {
-      
+        
       }
     }
     $next();
