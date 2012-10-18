@@ -1,0 +1,1 @@
+Hello <a href="<?php echo $user->url ?>"><?php echo $user->name ?></a>
