@@ -22,6 +22,9 @@ Download `phluid-php` to a server somewhere.
       $response->renderText( "Hello {$request->param('name')}");
     });
     
+    $app->run();
+    
+    
 Save that to `index.php` and put it on a webserver somewhere and have it serve all file
 requests with an `.htaccess` like this one.
 
