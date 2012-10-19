@@ -27,19 +27,22 @@ class Phluid_Route implements Phluid_Middleware, Phluid_RouteMatcher {
     $this->methods = is_array( $methods ) ? $methods : array( $methods );
     $this->path = $path;
     $this->closure = $closure;
+    $this->regex = self::compileRegex( $path );
   }
   
   /**
    * Tests if a route matches a given Phluid_Request
    *
    * @param Phluid_Request $request 
-   * @return boolean
+   * @return array of path pattern matches or false if no match
    * @author Beau Collins
    */
   public function matches( $request ){
     // method must match
-    if ( in_array( $request->method, $this->methods ) && $request->parsePath( $this->path ) ) {
-      return true;
+    if ( in_array( $request->method, $this->methods ) ) {
+      if( preg_match( $this->regex, $request->path, $matches) ){
+        return $matches;
+      }
     }
     return false;
   }
@@ -55,6 +58,14 @@ class Phluid_Route implements Phluid_Middleware, Phluid_RouteMatcher {
   
   public function __toString(){
     return implode( ',', $this->methods ) . ' ' . $this->path;
+  }
+  
+  public static function compileRegex( $pattern ){
+    // sorry about the magic here
+    $regex_pattern = preg_replace( "/\.:/", "\\.:", $pattern );
+    $regex_pattern = preg_replace( "/\*/", ".*", $regex_pattern );
+    $regex_pattern = preg_replace( "#(/)?:([\w]+)(\?)?#", '($1(?<$2>[^/]+))$3', $regex_pattern );
+    return '#^' . $regex_pattern . '/?$#';
   }
   
 }

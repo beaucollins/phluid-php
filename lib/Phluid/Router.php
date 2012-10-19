@@ -25,7 +25,8 @@ class Phluid_Router implements Phluid_Middleware {
    */
   public function find( $request ){
     foreach( $this->routes as $route ){
-      if ( $route->matches($request) ) {
+      if ( $matches = $route->matches($request) ) {
+        $request->params = $matches;
         return $route;
       }
     }
