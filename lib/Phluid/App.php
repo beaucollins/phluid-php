@@ -103,8 +103,9 @@ class Phluid_App {
    */
   private function runMiddlewares( $request, $response, $middlewares ){
     if ( $middleware = array_shift( $middlewares ) ) {
-      $response = $middleware( $request, $response, function () use ($request, $response, $middlewares){
-        $this->runMiddlewares( $request, $response, $middlewares );
+      $app = $this;
+      $response = $middleware( $request, $response, function () use ($app, $request, $response, $middlewares){
+        $app->runMiddlewares( $request, $response, $middlewares );
       });
     }
     
