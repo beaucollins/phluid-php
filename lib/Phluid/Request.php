@@ -5,7 +5,7 @@ class Phluid_Request {
   var $method;
   var $path;
   var $headers;
-  var $params;
+  var $params = array();
   var $memo = array();
   var $body;
  

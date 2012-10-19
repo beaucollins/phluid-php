@@ -5,9 +5,10 @@ require_once 'RouteMatcher.php';
 
 class Phluid_Route implements Phluid_Middleware, Phluid_RouteMatcher {
   
-  private $closure;
+  private $action;
   private $methods;
   private $path;
+  private $filters = array();
   
   /**
    * Build a Phluid_Route that matches the given HTTP method and path. Paths
@@ -20,13 +21,23 @@ class Phluid_Route implements Phluid_Middleware, Phluid_RouteMatcher {
    *
    * @param string, array     $methods HTTP methods to match
    * @param string            $path 
-   * @param Phluid_Middleware $closure 
+   * @param Phluid_Middleware $action 
    * @author Beau Collins
    */
-  public function __construct( $methods, $path, $closure ){
+  public function __construct( $methods, $path, $action_or_filters, $action = null ){
     $this->methods = is_array( $methods ) ? $methods : array( $methods );
     $this->path = $path;
-    $this->closure = $closure;
+    if ( is_null( $action ) ) {
+      $this->action = $action_or_filters;
+    } else {
+      $this->action = $action;
+      $this->filters = $action_or_filters;
+    }
+    
+    if ( $this->filters && !is_array( $this->filters )) {
+      $this->filters = array( $this->filters );
+    }
+    
     $this->regex = self::compileRegex( $path );
   }
   
@@ -48,9 +59,14 @@ class Phluid_Route implements Phluid_Middleware, Phluid_RouteMatcher {
   }
   
   public function __invoke( $request, $response, $next = null ){
-    if ( $this->matches( $request )) {
-      $closure = $this->closure;
-      $closure( $request, $response, $next );
+    if ( $matches = $this->matches( $request ) ) {
+      $response->params = $matches;
+      $filters = $this->filters;
+      $action = $this->action;
+      array_push( $filters, function () use ( $action, $request, $response, $next ){
+        $action( $request, $response, $next );
+      } );
+      Phluid_Utils::performFilters( $request, $response, $filters );
     } else {
       $next();
     }

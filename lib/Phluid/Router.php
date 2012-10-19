@@ -41,9 +41,9 @@ class Phluid_Router implements Phluid_Middleware {
    * @return void
    * @author Beau Collins
    */
-  public function route( $method, $path, $closure ){
+  public function route( $method, $path, $filters, $action = null ){
     
-    $route = new Phluid_Route( $method, $path, $closure );
+    $route = new Phluid_Route( $method, $path, $filters, $action );
     array_push( $this->routes, $route );
       
     return $route;

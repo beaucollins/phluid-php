@@ -9,4 +9,13 @@ class Phluid_Utils {
     return $default;
   }
   
+  static function performFilters( $request, $response, $filters ){
+    if ( $filter = array_shift( $filters ) ) {
+      $filter( $request, $response, function() use ( $request, $response, $filters ) {
+        Phluid_Utils::performFilters( $request, $response, $filters );
+      });
+    }
+    
+  }
+  
 }

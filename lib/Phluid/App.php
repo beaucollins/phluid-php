@@ -86,27 +86,9 @@ class Phluid_App {
     // get a copy of the middleware stack
     $middlewares = $this->middleware;
     $response = new Phluid_Response( $this, $request );
-    self::runMiddlewares( $this, $request, $response, $middlewares );
+    Phluid_Utils::performFilters( $request, $response, $middlewares );
     
     return $response;
-    
-  }
-  
-  /**
-   * Runs the provided middlewares with the request and response. This should
-   * produce no side effects to the app so it can be called any number of times.
-   *
-   * @param Phluid_Request $request 
-   * @param Phluid_Response $response 
-   * @param array $middlewares 
-   * @author Beau Collins
-   */
-  public static function runMiddlewares( $app, $request, $response, $middlewares ){
-    if ( $middleware = array_shift( $middlewares ) ) {
-      $response = $middleware( $request, $response, function () use ($app, $request, $response, $middlewares){
-        $app::runMiddlewares( $app, $request, $response, $middlewares );
-      });
-    }
     
   }
   
@@ -166,9 +148,9 @@ class Phluid_App {
    * @return Phluid_App
    * @author Beau Collins
    */
-  public function route( $method, $path, $closure ){
+  public function route( $method, $path, $filters, $action = null ){
     
-    $this->router->route( $method, $path, $closure );
+    $this->router->route( $method, $path, $filters, $action );
     return $this;
     
   }
@@ -182,8 +164,8 @@ class Phluid_App {
    * @return Phluid_App
    * @author Beau Collins
    */
-  public function get( $path, $closure ){
-    return $this->route( 'GET', $path, $closure );
+  public function get( $path, $filters, $action = null ){
+    return $this->route( 'GET', $path, $filters, $action );
   }
   
   /**
@@ -195,8 +177,8 @@ class Phluid_App {
    * @return Phluid_App
    * @author Beau Collins
    */
-  public function post( $path, $closure ){
-    return $this->route( 'POST', $path, $closure );
+  public function post( $path, $filters, $action = null ){
+    return $this->route( 'POST', $path, $filters, $action );
   }
   
 }
