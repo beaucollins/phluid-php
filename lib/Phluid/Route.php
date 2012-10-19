@@ -3,8 +3,7 @@
 require_once 'Middleware.php';
 require_once 'RouteMatcher.php';
 
-class Phluid_Route implements Phluid_Middleware, Phluid_RouteMatcher
- {
+class Phluid_Route implements Phluid_Middleware, Phluid_RouteMatcher {
   
   private $closure;
   private $methods;

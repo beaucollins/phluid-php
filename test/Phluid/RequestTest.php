@@ -36,7 +36,7 @@ class Phluid_RequestTest extends PHPUnit_Framework_TestCase {
     $request = new Phluid_Request( 'GET', '/user/beau' );
     
     $this->assertSame( 1, preg_match("#/user(/(?<name>[^/]+))?#", '/user' ) );
-    $this->assertSame( "#/user(/(?<name>[^/]+))?#", $request->compileRegex( '/user/:name?' ) );
+    $this->assertSame( "#^/user(/(?<name>[^/]+))?/?$#", $request->compileRegex( '/user/:name?' ) );
   }
   
   public function testSplatRoutes(){
@@ -48,7 +48,7 @@ class Phluid_RequestTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue( $request->parsePath( '/user/*' ) );
     
     $request2 = new Phluid_Request( 'GET', '/user/' );
-    $this->assertTrue( $request2->parsePath( '/user/:name?' ) );
+    $this->assertTrue( $request2->parsePath( '/user/:name?' ), "Failed with: {$request2->compileRegex('/user/:name?')}" );
     $this->assertTrue( $request2->parsePath( '/user' ) );
     
   }

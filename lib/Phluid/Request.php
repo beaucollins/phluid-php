@@ -119,8 +119,9 @@ class Phluid_Request {
   public function compileRegex( $pattern ){
     // sorry about the magic here
     $regex_pattern = preg_replace( "/\.:/", "\\.:", $pattern );
+    $regex_pattern = preg_replace( "/\*/", ".*", $pattern );
     $regex_pattern = preg_replace( "#(/)?:([\w]+)(\?)?#", '($1(?<$2>[^/]+))$3', $regex_pattern );
-    return '#' . $regex_pattern . '#';
+    return '#^' . $regex_pattern . '/?$#';
   }
   
   public function withPrefix( $prefix ){
