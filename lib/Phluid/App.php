@@ -86,7 +86,7 @@ class Phluid_App {
     // get a copy of the middleware stack
     $middlewares = $this->middleware;
     $response = new Phluid_Response( $this, $request );
-    $this->runMiddlewares( $request, $response, $middlewares );
+    self::runMiddlewares( $this, $request, $response, $middlewares );
     
     return $response;
     
@@ -101,11 +101,10 @@ class Phluid_App {
    * @param array $middlewares 
    * @author Beau Collins
    */
-  private function runMiddlewares( $request, $response, $middlewares ){
+  public static function runMiddlewares( $app, $request, $response, $middlewares ){
     if ( $middleware = array_shift( $middlewares ) ) {
-      $app = $this;
       $response = $middleware( $request, $response, function () use ($app, $request, $response, $middlewares){
-        $app->runMiddlewares( $request, $response, $middlewares );
+        $app::runMiddlewares( $app, $request, $response, $middlewares );
       });
     }
     
