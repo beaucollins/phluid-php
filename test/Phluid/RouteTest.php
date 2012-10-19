@@ -4,6 +4,10 @@ require_once 'lib/Phluid/Route.php';
 
 class Phluid_RouteTest extends PHPUnit_Framework_TestCase {
   
+  public function getIndex( $request, $response ){
+    $response->renderText( 'hello world' );
+  }
+  
   public function testInvokingRoute(){
     $app = new Phluid_App();
     $app->get( '/show/:person', function( $request, $response ){
@@ -12,6 +16,13 @@ class Phluid_RouteTest extends PHPUnit_Framework_TestCase {
     $response = $app( new Phluid_Request( 'GET', '/show/beau' ) );    
     $this->assertSame( 'beau', $response->getBody() );
     
+  }
+  
+  public function testRouteWithArrayCallback(){
+    $app = new Phluid_App();
+    $app->get( '/', array( $this, 'getIndex' ) );
+    $response = $app( new Phluid_Request( 'GET', '/' ) );
+    $this->assertSame( 'hello world', $response->getBody() );
   }
   
   public function testInvokigRouteWithFilters(){
