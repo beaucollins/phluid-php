@@ -26,6 +26,18 @@ class Phluid_RouteTest extends PHPUnit_Framework_TestCase {
     $response = $app( new Phluid_Request( 'GET', '/show/beau' ) );    
     $this->assertSame( strrev('beau'), $response->getBody() );
   }
+  
+  public function testInvokingRouteWithRedirectFilter(){
+    $app = new Phluid_App();
+    $redirect = function( $request, $response, $next ){
+      $response->redirect('/somewhere');
+    };
+    $app->get( '/', $redirect, function( $request, $response ){
+    });
+    $response = $app( new Phluid_Request( 'GET', '/' ) );
+    $this->assertSame( '/somewhere', $response->getHeader('location') );
+    
+  }
 
   public function testPathVariables(){
     
