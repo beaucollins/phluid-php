@@ -138,21 +138,32 @@ class Phluid_App {
    *
    * Example:
    *
-   *  $app->route( 'GET', '/profile/:username', function( $req, $res, $next ){
+   *  $app->on( 'GET', '/profile/:username', function( $req, $res, $next ){
    *    $res->renderText( "Hello {$req->param('username')}");
    *  });
    *
    * @param string $method GET, POST or other HTTP method
    * @param string $path the matching path, refer to Phluid_Router::route for options
-   * @param string $closure an invocable object/function that conforms to Phluid_Middleware
+   * @param invocable $closure an invocable object/function that conforms to Phluid_Middleware
    * @return Phluid_App
    * @author Beau Collins
    */
-  public function route( $method, $path, $filters, $action = null ){
-    
-    $this->router->route( $method, $path, $filters, $action );
+  public function on( $method, $path, $filters, $action = null ){
+    return $this->route( new Phluid_RequestMatcher( $method, $path ), $filters, $action );
+  }
+  
+  /**
+   * Chainable call to the router's route method
+   *
+   * @param invocable $matcher 
+   * @param invocable or array $filters 
+   * @param invocable $action 
+   * @return Phluid_App
+   * @author Beau Collins
+   */
+  public function route( $matcher, $filters, $action = null ){
+    $this->router->route( $matcher, $filters, $action );
     return $this;
-    
   }
   
   /**
@@ -160,12 +171,13 @@ class Phluid_App {
    * it is chainable.
    *
    * @param string $path 
-   * @param Phluid_Middleware $closure compatible function/invocable
+   * @param invocable or array $filters compatible function/invocable
+   * @param invocable $closure compatible function/invocable
    * @return Phluid_App
    * @author Beau Collins
    */
   public function get( $path, $filters, $action = null ){
-    return $this->route( 'GET', $path, $filters, $action );
+    return $this->on( 'GET', $path, $filters, $action );
   }
   
   /**
@@ -173,12 +185,13 @@ class Phluid_App {
    * it is chainable.
    *
    * @param string $path 
-   * @param Phluid_Middleware $closure 
+   * @param invocable or array $filters compatible function/invocable
+   * @param invocable $closure compatible function/invocable
    * @return Phluid_App
    * @author Beau Collins
    */
   public function post( $path, $filters, $action = null ){
-    return $this->route( 'POST', $path, $filters, $action );
+    return $this->on( 'POST', $path, $filters, $action );
   }
   
 }

@@ -16,13 +16,6 @@ class Phluid_Router implements Phluid_Middleware {
     
   }
   
-  /**
-   * Finds the first matching route for the given Phluid_Request
-   *
-   * @param Phluid_Request $request 
-   * @return Phluid_Route
-   * @author Beau Collins
-   */
   public function find( $request ){
     foreach( $this->routes as $route ){
       if ( $matches = $route->matches($request) ) {
@@ -32,36 +25,18 @@ class Phluid_Router implements Phluid_Middleware {
     }
   }
   
-  /**
-   * Creates a Phluid_Route with the given HTTP method and path.
-   *
-   * @param string            $method  HTTP Method (GET, POST, etc.)
-   * @param string            $path    path to match
-   * @param Phluid_Middleware $closure invocable that conforms to Phluid_Middleware
-   * @return void
-   * @author Beau Collins
-   */
-  public function route( $method, $path, $filters, $action = null ){
+  public function route( $matcher, $filters, $action = null ){
     
-    $route = new Phluid_Route( $method, $path, $filters, $action );
+    $route = new Phluid_Route( $matcher, $filters, $action );
     array_push( $this->routes, $route );
       
     return $route;
       
   }
   
-  /**
-   * Adds a route to the beginning of the route stack
-   *
-   * @param string            $method  HTTP Method (GET, POST, etc.)
-   * @param string            $path    path to match
-   * @param Phluid_Middleware $closure invocable that conforms to Phluid_Middleware
-   * @return void
-   * @author Beau Collins
-   */
-  public function prepend( $method, $path, $closure ){
+  public function prepend( $matcher, $filters, $closure ){
     
-    $route = new Phluid_Route( $method, $path, $closure );
+    $route = new Phluid_Route( $matcher, $filters, $closure );
     array_unshift( $this->routes, $route );
     
     return $route;
