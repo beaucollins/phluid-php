@@ -1,0 +1,1 @@
+<?php echo $this->fragment( 'hello', array( 'name' => $name ) ) ?>

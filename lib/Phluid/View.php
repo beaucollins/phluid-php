@@ -24,38 +24,39 @@ class View {
   /**
    * include a PHP file with the given locals as variables available to it
    */
-  public function render( $locals = array() ){
+  public function render( $locals = array(), $content = null ){
     
-    extract($locals);
-    
+    $path = $this->fullPath();
+    $compile = function( $path, $locals ) {
+      extract($locals);
+      return @include $path;
+    };
+    $context = new ViewContext( $this->path, $content );
+    $render = $compile->bindTo( $context );
     ob_start();
-    $included = @include $this->fullPath() ;
+    $included = $render( $path, $locals );
     $content = ob_get_clean();
     
     if( $included === false )
       throw new Exception_MissingView( "Missing template " . $this->fullPath() );
     
-    if ( $layout = $this->getLayout() ) {
-      $content = $layout->render( array_merge( $locals, array( 'content' => $content ) ) );
+    if ( $layout = $this->getLayout( $context->getLayout() ) ) {
+      $content = $layout->render( array_merge( $locals ), $content );
     }
     
     return $content;
     
   }
   
-  public function getLayout(){
-    if ( $this->layout ) {
-      return new View( $this->layout, null, $this->path );
+  public function getLayout( $layout = null ){
+    $use_layout = $layout ?: $this->layout;
+    if ( $use_layout ) {
+      return new View( $use_layout, null, $this->path );
     }
   }
-  
-  public function hasLayout(){
-    return $this->layout != null || self::$layout != null;
-  }
-  
+    
   public function fullPath(){
     return $this->path . '/' . $this->template . '.php';
-    
   }
   
 }
@@ -64,4 +65,60 @@ class Exception_MissingView extends Exception {
   function __construct( $message ){
     parent::__construct( $message, 404 );
   }
+}
+
+class ViewContext {
+  
+  private $layout = false;
+  private $layout_content;
+  private $view_path = null;
+  
+  function __construct( $view_path, $content = null ){
+    $this->view_path = $view_path;
+    $this->layout_content = $content;
+  }
+  
+  static function esc_html( $content ){
+    return htmlentities( $content );
+  }
+  
+  public function layout( $layout ){
+    $this->layout = $layout;
+  }
+  
+  public function getLayout(){
+    return $this->layout;
+  }
+  
+  public function content(){
+    return $this->layout_content;
+  }
+  
+  public function fragment( $name, $locals ){
+    
+    $paths = explode( DIRECTORY_SEPARATOR, $name );
+    array_push( $paths, '_' . array_pop( $paths ) );
+    array_unshift( $paths, $this->view_path );
+    
+    $file = implode( DIRECTORY_SEPARATOR, $paths ) . '.php';
+    
+    $compile = function( $file, $locals ) {
+      extract( $locals );
+      return @include $file;
+    };
+    
+    $context = new ViewContext( $this->view_path );
+    $render = $compile->bindTo( $context );
+    
+    ob_start();
+    $included = $render( $file, $locals );
+    $content = ob_get_clean();
+    
+    if ( false === $included ) 
+      throw new Exception_MissingView( "Missing template " . $file );
+    
+    return $content;
+    
+  }
+  
 }

@@ -1,1 +1,1 @@
-Hello <?= $username ?>
+Hello <?php echo $this->esc_html( $username ) ?>

@@ -1,1 +1,1 @@
-<html><?= $content ?></html>
+<html><?= $this->content() ?></html>

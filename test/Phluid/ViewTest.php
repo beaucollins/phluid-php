@@ -36,6 +36,18 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
     $this->assertNotNull( $view->getLayout() );
     $this->assertSame( '<html>Hello World</html>', $view->render() );
     
+    $view = new View( 'hello-html', null, $this->view_path );
+    
+    $this->assertNull( $view->getLayout() );
+    $this->assertSame( "<!DOCTYPE html>\nHello World<footer></footer>", $view->render() );
+    
+  }
+  
+  public function testFragment(){
+    
+    $view = new View( 'fragment-test', null, $this->view_path );
+    $name = "sam";
+    $this->assertSame( "Hello world, {$name}", $view->render( array( 'name' => $name ) ) );
     
   }
   

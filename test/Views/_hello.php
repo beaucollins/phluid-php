@@ -1,0 +1,1 @@
+Hello <?php echo $this->fragment( 'world', array( 'name' => $name ) ); ?>
