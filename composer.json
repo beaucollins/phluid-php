@@ -1,6 +1,6 @@
 {
   "name" : "phluid/phluid",
-  "description" : "A microframework",
+  "description" : "A PHP microframework",
   "homepage" : "http://github.com/beaucollins/phluid-php",
   "license" : "MIT",
   "version" : "0.1.0",
