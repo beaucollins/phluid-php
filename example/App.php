@@ -2,7 +2,7 @@
 
 require_once realpath('../') . '/lib/Phluid.php';
   
-$app = new Phluid_App();
+$app = new App();
 
 /**
  * Adds an X-SERVER header to each request

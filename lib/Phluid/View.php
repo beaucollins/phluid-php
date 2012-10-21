@@ -7,10 +7,9 @@
  * 
  * A layout is simply a view that has an `echo $content` somewhere in it.
  */
+namespace Phluid;
 
-require_once 'Exceptions.php';
-
-class Phluid_View {
+class View {
     
   private $template;
   private $path;
@@ -34,7 +33,7 @@ class Phluid_View {
     $content = ob_get_clean();
     
     if( $included === false )
-      throw new Phluid_Exception_MissingView( "Missing template " . $this->fullPath() );
+      throw new Exception_MissingView( "Missing template " . $this->fullPath() );
     
     if ( $layout = $this->getLayout() ) {
       $content = $layout->render( array_merge( $locals, array( 'content' => $content ) ) );
@@ -46,7 +45,7 @@ class Phluid_View {
   
   public function getLayout(){
     if ( $this->layout ) {
-      return new Phluid_View( $this->layout, null, $this->path );
+      return new View( $this->layout, null, $this->path );
     }
   }
   
@@ -61,7 +60,7 @@ class Phluid_View {
   
 }
 
-class Phluid_Exception_MissingView extends Phluid_Exception {
+class Exception_MissingView extends Exception {
   function __construct( $message ){
     parent::__construct( $message, 404 );
   }

@@ -1,8 +1,8 @@
 <?php
 
-require 'Route.php';
+namespace Phluid;
 
-class Phluid_Router implements Phluid_Middleware {
+class Router {
   
   private $routes = array();
   
@@ -11,7 +11,7 @@ class Phluid_Router implements Phluid_Middleware {
     if( $route ){
       $route( $req, $res, $next );
     } else {
-      throw new Phluid_Exception_NotFound( "No route matching {$req}" );
+      throw new Exception_NotFound( "No route matching {$req}" );
     }
     
   }
@@ -27,7 +27,7 @@ class Phluid_Router implements Phluid_Middleware {
   
   public function route( $matcher, $filters, $action = null ){
     
-    $route = new Phluid_Route( $matcher, $filters, $action );
+    $route = new Route( $matcher, $filters, $action );
     array_push( $this->routes, $route );
       
     return $route;
@@ -36,7 +36,7 @@ class Phluid_Router implements Phluid_Middleware {
   
   public function prepend( $matcher, $filters, $closure ){
     
-    $route = new Phluid_Route( $matcher, $filters, $closure );
+    $route = new Route( $matcher, $filters, $closure );
     array_unshift( $this->routes, $route );
     
     return $route;

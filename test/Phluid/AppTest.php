@@ -1,13 +1,15 @@
 <?php
 
-require_once 'lib/Phluid/App.php';
+namespace Phluid;
 
-class Phluid_AppTest extends PHPUnit_Framework_TestCase {
+require_once 'test/helper.php';
+
+class AppTest extends \PHPUnit_Framework_TestCase {
   
   
   public function setUp(){
     
-    $this->app = new Phluid_App();
+    $this->app = new App();
     $this->app->get( '/', function( $request, $response, $next ){
       $response->renderString('Hello World');
     } );
@@ -26,7 +28,7 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
   public function testAppRoute(){
     
     
-    $request = new Phluid_Request( 'GET', '/', array() );
+    $request = new Request( 'GET', '/', array() );
     $response = $this->app->serve( $request );
     
     $this->assertSame( 'Hello World', $response->getBody() );
@@ -40,7 +42,7 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
       ->get( '/users/:username' , function( $request, $response ){
         $response->render( 'profile', array( "username" => $request->param( 'username' ) ) );
       } )
-      ->serve( new Phluid_Request( 'GET', '/users/beau' ) );
+      ->serve( new Request( 'GET', '/users/beau' ) );
     
       $this->assertSame( 'Hello beau', $response->getBody() );
       
@@ -50,7 +52,7 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
     
     $this->app->get( '/awesome', new HelloWorldAction );
     
-    $request = new Phluid_Request( 'GET', '/awesome', array() );
+    $request = new Request( 'GET', '/awesome', array() );
     $response = $this->app->serve( $request );
     
     $this->assertSame( 'Hello World!', $response->getBody() );
@@ -61,7 +63,7 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
     
     $this->app->inject( new Lol() );
     
-    $request = new Phluid_Request( 'GET', '/' );
+    $request = new Request( 'GET', '/' );
     
     $response = $this->app->serve( $request );
     
@@ -74,7 +76,7 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
   
   public function testNoMatchingResponse(){
     
-    $request = new Phluid_Request( 'GET', '/doesnt-exist' );
+    $request = new Request( 'GET', '/doesnt-exist' );
     try {
       $response = $this->app->serve( $request );
     } catch( Exception $e ){
@@ -84,11 +86,11 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
   }
   
   public function testExceptionHandler(){
-    $app = new Phluid_App();
+    $app = new App();
     $handler = new HandleException();
     $app->inject( $handler );
     
-    $request = new Phluid_Request( 'GET', '/doesnt-exist' );
+    $request = new Request( 'GET', '/doesnt-exist' );
     $response = $app( $request );
         
     $this->assertSame( 'Uh, Oh', $response->getBody() );
@@ -101,7 +103,7 @@ class Phluid_AppTest extends PHPUnit_Framework_TestCase {
       $response->renderString( strlen( $request->getBody() ) );
     } );
     
-    $request = new Phluid_Request( 'POST', '/robot' );
+    $request = new Request( 'POST', '/robot' );
     $request->setBody( "?something=awesome" );
      
     $response = $this->app->serve( $request );
@@ -127,7 +129,7 @@ class HandleException {
   public function __invoke( $request, $response, $next ){
     try {
       $next();
-    } catch (Phluid_Exception $e) {
+    } catch (Exception $e) {
       $response->renderString( 'Uh, Oh', 'text/plain', $e->getCode() );
     }
   }

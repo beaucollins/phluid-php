@@ -12,7 +12,7 @@ Download `phluid-php` to a server somewhere.
     
     require 'path/to/lib/Phluid.php';
     
-    $app = new Phluid_App();
+    $app = new App();
     
     $app->get( '/', function( $request, $response ){
       $response->renderText( 'Hello World' );

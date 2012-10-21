@@ -1,20 +1,23 @@
 <?php
 
-require_once 'lib/Phluid/Request.php';
-require_once 'lib/Phluid/Middleware/JsonBodyParser.php';
+namespace Phluid\Middleware;
 
-class Phluid_Middleware_BodyParserTest extends PHPUnit_Framework_TestCase {
+use Phluid\Request;
+
+require_once 'test/helper.php';
+
+class BodyParserTest extends \PHPUnit_Framework_TestCase {
   
   public function testJsonParsing(){
     
-    $thing = new stdClass();
+    $thing = new \stdClass();
     $thing->awesome = "YES";
     
-    $request = new Phluid_Request( 'POST', '/', array( 'Content-Type' => 'application/json' ), json_encode( $thing ) );
+    $request = new Request( 'POST', '/', array( 'Content-Type' => 'application/json' ), json_encode( $thing ) );
     
     $this->assertSame( json_encode( $thing ), $request->getBody() );
     
-    $parser = new Phluid_Middleware_JsonBodyParser( false );
+    $parser = new JsonBodyParser( false );
     
     $next = function() use( $request, $thing ) {
       $this->assertSame( $thing->awesome, $request->getBody()->awesome );

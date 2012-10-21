@@ -1,8 +1,8 @@
 <?php
 
-require_once 'View.php';
+namespace Phluid;
 
-class Phluid_Response {
+class Response {
 
   private $raw_body;
   private $status_code = 200;
@@ -16,8 +16,8 @@ class Phluid_Response {
   }
   
   /**
-   * Searches for template in the Phluid_App view_path setting and renders it
-   * using a Phluid_View
+   * Searches for template in the App view_path setting and renders it
+   * using a View
    *
    * @param string $template name of template to find
    * @param array  $locals   variables that will be available to the template
@@ -26,11 +26,11 @@ class Phluid_Response {
    * @author Beau Collins
    */
   public function render( $template, $locals = array(), $options = array() ){
-    $layout = Phluid_Utils::array_val( $options, 'layout', $this->app->default_layout );
-    $status = Phluid_Utils::array_val( $options, 'status', 200 );
-    $content_type = Phluid_Utils::array_val($options, 'content-type', 'text/html' );
+    $layout = Utils::array_val( $options, 'layout', $this->app->default_layout );
+    $status = Utils::array_val( $options, 'status', 200 );
+    $content_type = Utils::array_val($options, 'content-type', 'text/html' );
     $locals['request'] = $this->request;
-    $view = new Phluid_View( $template, $layout, $this->app->view_path );
+    $view = new View( $template, $layout, $this->app->view_path );
     $this->renderString( $view->render( $locals ), $content_type, $status );
   }
   

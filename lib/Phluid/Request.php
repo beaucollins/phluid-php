@@ -1,6 +1,8 @@
 <?php
 
-class Phluid_Request {
+namespace Phluid;
+
+class Request {
  
   var $method;
   var $path;
@@ -10,10 +12,10 @@ class Phluid_Request {
   var $body;
  
   /**
-   * Static method that constructs a Phluid_Request from global $_SERVER 
+   * Static method that constructs a Request from global $_SERVER 
    * variables for use with Apache/Nginx.
    *
-   * @return Phluid_Request
+   * @return Request
    * @author Beau Collins
    */
   public static function fromServer(){
@@ -26,14 +28,14 @@ class Phluid_Request {
       $path = $uri;
     }
     
-    $request = new Phluid_Request( $_SERVER['REQUEST_METHOD'], $path, $_SERVER );
+    $request = new Request( $_SERVER['REQUEST_METHOD'], $path, $_SERVER );
     $request->setBody( @file_get_contents('php://input') );
     
     return $request;
   }
   
   /**
-   * Constructs a Phluid_Request
+   * Constructs a Request
    *
    * @param string $method HTTP Method
    * @param string $path Path for the HTTP request
@@ -57,7 +59,7 @@ class Phluid_Request {
   }
   
   public function getHeader( $key ){
-    return Phluid_Utils::array_val( $this->headers, strtoupper($key) );
+    return Utils::array_val( $this->headers, strtoupper($key) );
   }
   
   public function __get( $key ){
@@ -92,7 +94,7 @@ class Phluid_Request {
   public function withPrefix( $prefix ){
     if ( stripos( $this->path, $prefix ) === 0 ) {
       $new_path = substr( $this->path, strlen( $prefix ) );
-      return new Phluid_Request( $this->method, $new_path, $this->headers, $this->body );
+      return new Request( $this->method, $new_path, $this->headers, $this->body );
     } else {
       return $this;
     }

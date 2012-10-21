@@ -1,8 +1,8 @@
 <?php
 
-require_once 'Utils.php';
+namespace Phluid;
 
-class Phluid_Settings {
+class Settings {
   
   private $settings = array();
   
@@ -16,7 +16,7 @@ class Phluid_Settings {
   }
   
   public function __get( $key ){
-    return Phluid_Utils::array_val( $this->settings, $key );
+    return Utils::array_val( $this->settings, $key );
   }
   
 }

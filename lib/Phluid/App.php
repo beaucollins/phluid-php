@@ -1,14 +1,8 @@
 <?php
 
-require_once 'Utils.php';
-require_once 'Router.php';
-require_once 'Request.php';
-require_once 'Response.php';
-require_once 'Settings.php';
-require_once 'Exceptions.php';
-require_once 'Middleware.php';
+namespace Phluid;
 
-class Phluid_App {
+class App {
   
   private $router;
   private $middleware = array();
@@ -16,17 +10,17 @@ class Phluid_App {
   private $router_mounted = false;
   
   /**
-   * Passes an array of settings to initialize Phluid_Settings with.
+   * Passes an array of settings to initialize Settings with.
    *
    * @param array $options the settings for the app
-   * @return Phluid_App
+   * @return App
    * @author Beau Collins
    **/
   public function __construct( $options = array() ){
     
     $defaults = array( 'view_path' => realpath('.') . '/views' );
-    $this->settings = new Phluid_Settings( array_merge( $defaults, $options ) );
-    $this->router = new Phluid_Router();
+    $this->settings = new Settings( array_merge( $defaults, $options ) );
+    $this->router = new Router();
     
   }
   
@@ -62,7 +56,7 @@ class Phluid_App {
     
     ob_start();
     
-    $request = Phluid_Request::fromServer()->withPrefix( $this->prefix );    
+    $request = Request::fromServer()->withPrefix( $this->prefix );    
     $response = $this->serve( $request );
     
     $this->sendResponseHeaders( $response );
@@ -72,11 +66,11 @@ class Phluid_App {
   }
   
   /**
-   * Given a Phluid_Request it runs the configured middlewares and routes and
+   * Given a Request it runs the configured middlewares and routes and
    * returns the response.
    *
-   * @param Phluid_Request $request 
-   * @return Phluid_Response
+   * @param Request $request 
+   * @return Response
    * @author Beau Collins
    */
   public function serve( $request ){
@@ -85,8 +79,8 @@ class Phluid_App {
     
     // get a copy of the middleware stack
     $middlewares = $this->middleware;
-    $response = new Phluid_Response( $this, $request );
-    Phluid_Utils::performFilters( $request, $response, $middlewares );
+    $response = new Response( $this, $request );
+    Utils::performFilters( $request, $response, $middlewares );
     
     return $response;
     
@@ -104,10 +98,10 @@ class Phluid_App {
   }
   
   /**
-   * calls header for each header in Phluid_Response.
+   * calls header for each header in Response.
    * TODO: Better suited for some kind of adapter
    *
-   * @param Phluid_Response $response 
+   * @param Response $response 
    * @return void
    * @author Beau Collins
    */
@@ -122,8 +116,8 @@ class Phluid_App {
    * Adds the given middleware to the app's middleware stack. Returns $this for
    * chainable calls.
    *
-   * @param Phluid_Middleware $middleware 
-   * @return Phluid_App
+   * @param Middleware $middleware 
+   * @return App
    * @author Beau Collins
    */
   public function inject( $middleware ){
@@ -133,7 +127,7 @@ class Phluid_App {
   }
   
   /**
-   * Configures a route give the HTTP request method, calls Phluid_Router::route
+   * Configures a route give the HTTP request method, calls Router::route
    * returns $this for chainable calls
    *
    * Example:
@@ -143,13 +137,13 @@ class Phluid_App {
    *  });
    *
    * @param string $method GET, POST or other HTTP method
-   * @param string $path the matching path, refer to Phluid_Router::route for options
-   * @param invocable $closure an invocable object/function that conforms to Phluid_Middleware
-   * @return Phluid_App
+   * @param string $path the matching path, refer to Router::route for options
+   * @param invocable $closure an invocable object/function that conforms to Middleware
+   * @return App
    * @author Beau Collins
    */
   public function on( $method, $path, $filters, $action = null ){
-    return $this->route( new Phluid_RequestMatcher( $method, $path ), $filters, $action );
+    return $this->route( new RequestMatcher( $method, $path ), $filters, $action );
   }
   
   /**
@@ -158,7 +152,7 @@ class Phluid_App {
    * @param invocable $matcher 
    * @param invocable or array $filters 
    * @param invocable $action 
-   * @return Phluid_App
+   * @return App
    * @author Beau Collins
    */
   public function route( $matcher, $filters, $action = null ){
@@ -173,7 +167,7 @@ class Phluid_App {
    * @param string $path 
    * @param invocable or array $filters compatible function/invocable
    * @param invocable $closure compatible function/invocable
-   * @return Phluid_App
+   * @return App
    * @author Beau Collins
    */
   public function get( $path, $filters, $action = null ){
@@ -187,7 +181,7 @@ class Phluid_App {
    * @param string $path 
    * @param invocable or array $filters compatible function/invocable
    * @param invocable $closure compatible function/invocable
-   * @return Phluid_App
+   * @return App
    * @author Beau Collins
    */
   public function post( $path, $filters, $action = null ){

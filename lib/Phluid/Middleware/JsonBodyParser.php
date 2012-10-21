@@ -1,6 +1,8 @@
 <?php
 
-class Phluid_Middleware_JsonBodyParser implements Phluid_Middleware {
+namespace Phluid\Middleware;
+
+class JsonBodyParser {
   
   private $array;
   

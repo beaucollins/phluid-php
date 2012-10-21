@@ -1,9 +1,8 @@
 <?php
 
-require_once 'Middleware.php';
-require_once 'RequestMatcher.php';
+namespace Phluid;
 
-class Phluid_Route implements Phluid_Middleware {
+class Route {
   
   private $action;
   private $matcher;
@@ -38,7 +37,7 @@ class Phluid_Route implements Phluid_Middleware {
       array_push( $filters, function () use ( $action, $request, $response, $next ){
         $action( $request, $response, $next );
       } );
-      Phluid_Utils::performFilters( $request, $response, $filters );
+      Utils::performFilters( $request, $response, $filters );
     } else {
       $next();
     }

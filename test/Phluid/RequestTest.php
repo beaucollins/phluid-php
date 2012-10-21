@@ -1,12 +1,14 @@
 <?php
 
-require_once 'lib/Phluid/Request.php';
+namespace Phluid;
 
-class Phluid_RequestTest extends PHPUnit_Framework_TestCase {
+require_once 'test/helper.php';
+
+class RequestTest extends \PHPUnit_Framework_TestCase {
   
   public function testPrefix(){
   
-    $request = new Phluid_Request('GET', '/something/other/');
+    $request = new Request('GET', '/something/other/');
     $new_request = $request->withPrefix( '/something' );
     
     $this->assertSame( '/other/', $new_request->path );
@@ -15,7 +17,7 @@ class Phluid_RequestTest extends PHPUnit_Framework_TestCase {
   
   public function testAccessors(){
     
-    $request = new Phluid_Request( 'GET', '/' );
+    $request = new Request( 'GET', '/' );
     
     $request->something = "Hi";
     
@@ -24,7 +26,7 @@ class Phluid_RequestTest extends PHPUnit_Framework_TestCase {
   }  
   
   public function testBody(){
-    $request = new Phluid_Request( 'POST', '/' );
+    $request = new Request( 'POST', '/' );
     $request->setBody( "Hello world" );
     $this->assertSame( "Hello world", $request->getBody() );
   }

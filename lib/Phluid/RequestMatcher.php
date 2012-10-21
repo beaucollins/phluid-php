@@ -1,6 +1,8 @@
 <?php
 
-class Phluid_RequestMatcher {
+namespace Phluid;
+
+class RequestMatcher {
   
   private $pattern;
   private $methods;

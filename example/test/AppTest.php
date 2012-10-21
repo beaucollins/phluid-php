@@ -13,7 +13,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
   function testIndexRequest(){
     //fake request
     $app = $this->app;
-    $req = new Phluid_Request( 'GET', '/' );
+    $req = new Request( 'GET', '/' );
     $res = $app->serve( $req );
     
     $this->assertSame( 'Hello World', $res->getBody() );
@@ -21,7 +21,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
   
   function testTemplateRequest(){
     $app = $this->app;
-    $req = new Phluid_Request( 'GET', '/profile' );
+    $req = new Request( 'GET', '/profile' );
     $res = $app->serve( $req );
     
     $responseText = <<<RESPONSE
@@ -34,7 +34,7 @@ RESPONSE;
   
   function testMiddleware(){
     
-    $req = new Phluid_Request( 'GET', '/' );
+    $req = new Request( 'GET', '/' );
     $res = $this->app->serve( $req );
     
     $this->assertSame( 'Awesomesauce', $res->getHeader( 'X-SERVER' ) );
@@ -42,7 +42,7 @@ RESPONSE;
   }
   
   function testMiddlewareClosure(){
-    $req = new Phluid_Request( 'GET', '/reverse' );
+    $req = new Request( 'GET', '/reverse' );
     $res = $this->app->serve( $req );
     
     $this->assertSame( strrev('Hello World'), $res->getBody() );
@@ -51,7 +51,7 @@ RESPONSE;
 Hello <a href="http://viewsource.beaucollins.com">Beau Collins</a>    
 RESPONSE;
     
-    $req = new Phluid_Request( 'GET', '/profile/reverse' );
+    $req = new Request( 'GET', '/profile/reverse' );
     $res = $this->app->serve( $req );
     $this->assertSame( strrev(trim($responseText)), $res->getBody() );
     

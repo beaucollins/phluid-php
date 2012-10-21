@@ -1,9 +1,10 @@
 <?php
 
-require_once 'lib/Phluid/View.php';
+namespace Phluid;
 
+require_once 'test/helper.php';
 
-class Phluid_ViewTest extends PHPUnit_Framework_TestCase {
+class ViewTest extends \PHPUnit_Framework_TestCase {
   
   public function setUp(){
     $this->view_path = realpath('.') . '/test/Views';
@@ -11,7 +12,7 @@ class Phluid_ViewTest extends PHPUnit_Framework_TestCase {
   
   public function testPath(){
     
-    $view = new Phluid_View( 'home', null, $this->view_path );
+    $view = new View( 'home', null, $this->view_path );
     
     $this->assertSame( $this->view_path . '/home.php', $view->fullPath() );
     $this->assertFileExists( $view->fullPath() );
@@ -19,10 +20,10 @@ class Phluid_ViewTest extends PHPUnit_Framework_TestCase {
   
   public function testCompilation(){
     
-    $hello_world = new Phluid_View( 'hello', null, $this->view_path );
+    $hello_world = new View( 'hello', null, $this->view_path );
     $this->assertSame( 'Hello World', $hello_world->render() );
     
-    $greeting = new Phluid_View( 'home', null, $this->view_path );
+    $greeting = new View( 'home', null, $this->view_path );
     
     $this->assertSame( 'Hi Beau, how are you?', $greeting->render( array( 'name' => 'Beau' ) ) );
     
@@ -30,7 +31,7 @@ class Phluid_ViewTest extends PHPUnit_Framework_TestCase {
   
   public function testLayout(){
       
-    $view = new Phluid_View( 'hello', 'layout', $this->view_path );
+    $view = new View( 'hello', 'layout', $this->view_path );
     
     $this->assertNotNull( $view->getLayout() );
     $this->assertSame( '<html>Hello World</html>', $view->render() );
@@ -39,10 +40,10 @@ class Phluid_ViewTest extends PHPUnit_Framework_TestCase {
   }
   
   public function testMissingViewException(){
-    $view = new Phluid_View( 'gone' );
+    $view = new View( 'gone' );
     try {
       $view->render();
-    } catch ( Phluid_Exception_MissingView $e) {
+    } catch ( Exception_MissingView $e) {
       
       $this->assertSame( "Missing template /gone.php", $e->getMessage() );
       
