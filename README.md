@@ -10,9 +10,9 @@ Download `phluid-php` to a server somewhere.
 
     <?php
     
-    require 'path/to/lib/Phluid.php';
-    
-    $app = new App();
+    require 'path/to/lib/Phluid/Autoload.php';
+        
+    $app = new Phluid\App();
     
     $app->get( '/', function( $request, $response ){
       $response->renderText( 'Hello World' );
