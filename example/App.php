@@ -1,8 +1,8 @@
 <?php
 
-require_once realpath('../') . '/lib/Phluid.php';
+require_once realpath('../') . '/lib/Phluid/Autoload.php';
   
-$app = new App();
+$app = new Phluid\App();
 
 /**
  * Adds an X-SERVER header to each request

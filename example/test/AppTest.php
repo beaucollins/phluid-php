@@ -1,5 +1,6 @@
 <?php
 
+use Phluid\Request;
 
 class AppTest extends PHPUnit_Framework_TestCase {
   
