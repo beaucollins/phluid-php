@@ -2,12 +2,12 @@
 
 namespace Phluid;
 
-require_once 'test/helper.php';
+require_once 'tests/helper.php';
 
 class ViewTest extends \PHPUnit_Framework_TestCase {
   
   public function setUp(){
-    $this->view_path = realpath('.') . '/test/Views';
+    $this->view_path = realpath('.') . '/tests/Views';
   }
   
   public function testPath(){

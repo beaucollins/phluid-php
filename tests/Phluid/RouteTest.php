@@ -2,7 +2,7 @@
 
 namespace Phluid;
 
-require_once 'test/helper.php';
+require_once 'tests/helper.php';
 
 class RouteTest extends \PHPUnit_Framework_TestCase {
   

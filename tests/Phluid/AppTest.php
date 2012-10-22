@@ -2,7 +2,7 @@
 
 namespace Phluid;
 
-require_once 'test/helper.php';
+require_once 'tests/helper.php';
 
 class AppTest extends \PHPUnit_Framework_TestCase {
   
@@ -37,7 +37,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
   
   public function testFullRequest(){
     
-    $this->app->view_path = realpath('.') . '/test/Views';
+    $this->app->view_path = realpath('.') . '/tests/Views';
     $response = $this->app
       ->get( '/users/:username' , function( $request, $response ){
         $response->render( 'profile', array( "username" => $request->param( 'username' ) ) );

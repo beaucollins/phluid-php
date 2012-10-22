@@ -4,7 +4,7 @@ namespace Phluid\Middleware;
 
 use Phluid\Request;
 
-require_once 'test/helper.php';
+require_once 'tests/helper.php';
 
 class BodyParserTest extends \PHPUnit_Framework_TestCase {
   
