@@ -57,7 +57,7 @@ class App {
     ob_start();
     
     $request = Request::fromServer()->withPrefix( $this->prefix );
-    $response = $this->buildResponse();
+    $response = $this->buildResponse( $request );
     
     $response = $this->serve( $request, $response );
     
@@ -76,7 +76,7 @@ class App {
    * @author Beau Collins
    */
   public function serve( $request, $response = null, $next = null ){
-    if( !$response ) $response = $this->buildResponse();
+    if( !$response ) $response = $this->buildResponse( $request );
     // mount the router if it hasn't been mounted explicitly
     if ( $this->router_mounted === false ) $this->inject( $this->router );
     
@@ -100,8 +100,8 @@ class App {
     return $this->serve( $request, $response, $next );
   }
   
-  public function buildResponse(){
-    return new Response( array(
+  public function buildResponse( $request = null ){
+    return new Response( $request, array(
       'view_path' => $this->view_path,
       'default_layout' => $this->default_layout
     ) );

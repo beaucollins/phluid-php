@@ -8,8 +8,10 @@ class Response {
   private $status_code = 200;
   private $headers = array();
   private $options;
+  public $request;
   
-  function __construct( $options = array() ){
+  function __construct( $request = null, $options = array() ){
+    $this->request = $request;
     $this->options = array_merge( array(
       'default_layout' => null,
       'view_path' => null
@@ -30,6 +32,7 @@ class Response {
     $layout = Utils::array_val( $options, 'layout', $this->options['default_layout'] );
     $status = Utils::array_val( $options, 'status', 200 );
     $content_type = Utils::array_val($options, 'content-type', 'text/html' );
+    $locals['request'] = $this->request;
     $view = new View( $template, $layout, $this->options['view_path'] );
     $this->renderString( $view->render( $locals ), $content_type, $status );
   }
