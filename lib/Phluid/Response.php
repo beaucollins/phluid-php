@@ -7,12 +7,13 @@ class Response {
   private $raw_body;
   private $status_code = 200;
   private $headers = array();
-  private $request;
-  private $app;
+  private $options;
   
-  function __construct( $app, $request ){
-    $this->app = $app;
-    $this->request = $request;
+  function __construct( $options = array() ){
+    $this->options = array_merge( array(
+      'default_layout' => null,
+      'view_path' => null
+    ), $options);
   }
   
   /**
@@ -26,11 +27,10 @@ class Response {
    * @author Beau Collins
    */
   public function render( $template, $locals = array(), $options = array() ){
-    $layout = Utils::array_val( $options, 'layout', $this->app->default_layout );
+    $layout = Utils::array_val( $options, 'layout', $this->options['default_layout'] );
     $status = Utils::array_val( $options, 'status', 200 );
     $content_type = Utils::array_val($options, 'content-type', 'text/html' );
-    $locals['request'] = $this->request;
-    $view = new View( $template, $layout, $this->app->view_path );
+    $view = new View( $template, $layout, $this->options['view_path'] );
     $this->renderString( $view->render( $locals ), $content_type, $status );
   }
   

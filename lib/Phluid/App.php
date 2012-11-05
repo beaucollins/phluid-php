@@ -56,15 +56,17 @@ class App {
     
     ob_start();
     
-    $request = Request::fromServer()->withPrefix( $this->prefix );    
-    $response = $this->serve( $request );
+    $request = Request::fromServer()->withPrefix( $this->prefix );
+    $response = $this->buildResponse();
+    
+    $response = $this->serve( $request, $response );
     
     $this->sendResponseHeaders( $response );
     ob_end_clean();
     echo $response->getBody();
     
   }
-  
+    
   /**
    * Given a Request it runs the configured middlewares and routes and
    * returns the response.
@@ -73,13 +75,14 @@ class App {
    * @return Response
    * @author Beau Collins
    */
-  public function serve( $request ){
+  public function serve( $request, $response = null, $next = null ){
+    if( !$response ) $response = $this->buildResponse();
     // mount the router if it hasn't been mounted explicitly
     if ( $this->router_mounted === false ) $this->inject( $this->router );
     
     // get a copy of the middleware stack
     $middlewares = $this->middleware;
-    $response = new Response( $this, $request );
+    if( $next ) array_push( $middlewares, $next );
     Utils::performFilters( $request, $response, $middlewares );
     
     return $response;
@@ -87,14 +90,21 @@ class App {
   }
   
   /**
-   * Convenience method invokes the serve method
+   * An app is just a specialized middleware
    *
    * @param string $request 
    * @return void
    * @author Beau Collins
    */
-  public function __invoke( $request ){
-    return $this->serve( $request );
+  public function __invoke( $request, $response = null, $next = null ){
+    return $this->serve( $request, $response, $next );
+  }
+  
+  public function buildResponse(){
+    return new Response( array(
+      'view_path' => $this->view_path,
+      'default_layout' => $this->default_layout
+    ) );
   }
   
   /**
