@@ -54,9 +54,18 @@ class View {
       return new View( $use_layout, null, $this->path );
     }
   }
-    
+  
+  /*
+   * if the template starts with DIRECTORY_SEPARATOR, then don't look in
+   * the provided path.
+   * TODO: make $this->path a searchable array
+   */
   public function fullPath(){
-    return $this->path . '/' . $this->template . '.php';
+    if ( strpos( $this->template, DIRECTORY_SEPARATOR ) === 0 ) {
+      return $this->template . '.php';
+    } else {
+      return $this->path . DIRECTORY_SEPARATOR . $this->template . '.php';
+    }
   }
   
 }
