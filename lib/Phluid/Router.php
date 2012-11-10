@@ -11,7 +11,7 @@ class Router {
     if( $route ){
       $route( $req, $res, $next );
     } else {
-      throw new Exception_NotFound( "No route matching {$req}" );
+      throw new Exception\NotFound( "No route matching {$req}" );
     }
     
   }

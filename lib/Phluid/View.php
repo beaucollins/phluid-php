@@ -38,7 +38,7 @@ class View {
     $content = ob_get_clean();
     
     if( $included === false )
-      throw new Exception_MissingView( "Missing template " . $this->fullPath() );
+      throw new Exception\MissingView( "Missing template " . $this->fullPath() );
     
     if ( $layout = $this->getLayout( $context->getLayout() ) ) {
       $content = $layout->render( array_merge( $locals ), $content );
@@ -59,12 +59,6 @@ class View {
     return $this->path . '/' . $this->template . '.php';
   }
   
-}
-
-class Exception_MissingView extends Exception {
-  function __construct( $message ){
-    parent::__construct( $message, 404 );
-  }
 }
 
 class ViewContext {
@@ -115,10 +109,19 @@ class ViewContext {
     $content = ob_get_clean();
     
     if ( false === $included ) 
-      throw new Exception_MissingView( "Missing template " . $file );
+      throw new Exception\MissingView( "Missing template " . $file );
     
     return $content;
     
   }
   
+}
+
+namespace Phluid\Exception;
+use Phluid\Exception;
+
+class MissingView extends Exception {
+  function __construct( $message ){
+    parent::__construct( $message, 404 );
+  }
 }

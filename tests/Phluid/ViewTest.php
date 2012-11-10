@@ -55,7 +55,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
     $view = new View( 'gone' );
     try {
       $view->render();
-    } catch ( Exception_MissingView $e) {
+    } catch ( Exception\MissingView $e) {
       
       $this->assertSame( "Missing template /gone.php", $e->getMessage() );
       

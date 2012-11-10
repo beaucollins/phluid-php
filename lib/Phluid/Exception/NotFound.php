@@ -1,8 +1,9 @@
 <?php
 
-namespace Phluid;
+namespace Phluid\Exception;
+use Phluid\Exception;
 
-class Exception_NotFound extends Exception {
+class NotFound extends Exception {
   
   function __construct( $message, $code = 404, $previous = null ){
     parent::__construct( $message, $code, $previous );
