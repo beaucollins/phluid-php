@@ -7,6 +7,7 @@ class Router {
   private $routes = array();
   
   public function __invoke( $req, $res, $next ){
+    
     $route = $this->find( $req );
     if( $route ){
       $route( $req, $res, $next );

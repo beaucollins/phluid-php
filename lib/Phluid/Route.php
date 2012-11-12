@@ -2,6 +2,8 @@
 
 namespace Phluid;
 
+use Phluid\Middleware\Cascade;
+
 class Route {
   
   private $action;
@@ -13,14 +15,17 @@ class Route {
     $this->matcher = $matcher;
     if ( is_null( $action ) ) {
       $this->action = $action_or_filters;
+      $filters = array();
     } else {
       $this->action = $action;
-      $this->filters = $action_or_filters;
+      $filters = $action_or_filters;
     }
     
-    if ( $this->filters && !is_array( $this->filters )) {
-      $this->filters = array( $this->filters );
+    if ( $filters && !is_array( $filters ) ) {
+      $filters = array( $filters );
     }
+    
+    $this->filters = new Cascade( $filters );
     
   }
   
@@ -29,15 +34,14 @@ class Route {
     return $matcher( $request );
   }
   
-  public function __invoke( $request, $response, $next = null ){
+  public function __invoke( $request, $response, $next ){
     if ( $matches = $this->matches( $request ) ) {
       $response->params = $matches;
       $filters = $this->filters;
       $action = $this->action;
-      array_push( $filters, function () use ( $action, $request, $response, $next ){
+      $filters( $request, $response, function() use ( $request, $response, $next, $action ) {
         $action( $request, $response, $next );
       } );
-      Utils::performFilters( $request, $response, $filters );
     } else {
       $next();
     }

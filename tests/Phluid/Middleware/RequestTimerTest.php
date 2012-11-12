@@ -14,7 +14,7 @@ class RequestTimerTest extends \PHPUnit_Framework_TestCase {
       time_nanosleep( 0, 0.03 * 1000000000 );
     } );
     
-    $response = $app(new Request( 'GET', '/' ) );
+    $response = $app->serve( new Request( 'GET', '/' ) );
     $this->assertGreaterThan( 10, intval( $response->getHeader('x-response-time') ) );
     
   }

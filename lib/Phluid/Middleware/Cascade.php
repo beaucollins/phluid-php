@@ -15,17 +15,15 @@ class Cascade {
   function __invoke( $request, $response, $next ){
     // copies the middleware array
     $middlewares = $this->middlewares;    
-    // now loop through each middleware where $next calls the
     $this->runMiddlewares( $middlewares, $request, $response, $next );
   }
   
   private function runMiddlewares( $middlewares, $request, $response, $final ){
-    // pull of a middleware
+    // pull off a middleware
     if( $middleware = array_shift( $middlewares ) ){
-      $next = function() use( $middlewares, $request, $response, $final ){
+      $middleware( $request, $response, function() use( $middlewares, $request, $response, $final ){
         $this->runMiddlewares( $middlewares, $request, $response, $final );
-      };
-      $middleware( $request, $response, $next );      
+      } );      
     } else {
       $final();
     }

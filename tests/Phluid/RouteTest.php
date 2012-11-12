@@ -15,7 +15,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase {
     $app->get( '/show/:person', function( $request, $response ){
       $response->renderText( $request->param('person') );
     });
-    $response = $app( new Request( 'GET', '/show/beau' ) );    
+    $response = $app->serve( new Request( 'GET', '/show/beau' ) );    
     $this->assertSame( 'beau', $response->getBody() );
     
   }
@@ -23,7 +23,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase {
   public function testRouteWithArrayCallback(){
     $app = new App();
     $app->get( '/', array( $this, 'getIndex' ) );
-    $response = $app( new Request( 'GET', '/' ) );
+    $response = $app->serve( new Request( 'GET', '/' ) );
     $this->assertSame( 'hello world', $response->getBody() );
   }
   
@@ -36,7 +36,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase {
     $app->get( '/show/:person', $reverse, function( $request, $response ){
       $response->renderText( $request->param('person') );
     });
-    $response = $app( new Request( 'GET', '/show/beau' ) );    
+    $response = $app->serve( new Request( 'GET', '/show/beau' ) );    
     $this->assertSame( strrev('beau'), $response->getBody() );
   }
   
@@ -47,7 +47,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase {
     };
     $app->get( '/', $redirect, function( $request, $response ){
     });
-    $response = $app( new Request( 'GET', '/' ) );
+    $response = $app->serve( new Request( 'GET', '/' ) );
     $this->assertSame( '/somewhere', $response->getHeader('location') );
     
   }

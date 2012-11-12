@@ -10,14 +10,5 @@ class Utils {
     }
     return $default;
   }
-  
-  static function performFilters( $request, $response, $filters ){
-    if ( $filter = array_shift( $filters ) ) {
-      $filter( $request, $response, function() use ( $request, $response, $filters ) {
-        Utils::performFilters( $request, $response, $filters );
-      });
-    }
     
-  }
-  
 }

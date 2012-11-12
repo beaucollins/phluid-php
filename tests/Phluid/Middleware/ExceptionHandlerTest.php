@@ -18,7 +18,7 @@ class ExceptionHandlerTest extends \PHPUnit_Framework_TestCase {
       $response->render( 'lol' );
     });
     
-    $response = $app( new Request( 'GET', '/' ) );          
+    $response = $app->serve( new Request( 'GET', '/' ) );          
     
     $this->assertTag( array( 'tag' => 'title', 'content' => 'Application Error:' ), $response->getBody() );
     

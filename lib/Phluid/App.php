@@ -2,6 +2,8 @@
 
 namespace Phluid;
 
+use Phluid\Middleware\Cascade;
+
 class App {
   
   private $router;
@@ -57,9 +59,7 @@ class App {
     ob_start();
     
     $request = Request::fromServer()->withPrefix( $this->prefix );
-    $response = $this->buildResponse( $request );
-    
-    $response = $this->serve( $request, $response );
+    $response = $this->serve( $request );
     
     $this->sendResponseHeaders( $response );
     ob_end_clean();
@@ -75,16 +75,10 @@ class App {
    * @return Response
    * @author Beau Collins
    */
-  public function serve( $request, $response = null, $next = null ){
-    if( !$response ) $response = $this->buildResponse( $request );
+  public function serve( $request ){
+    $response = $this->buildResponse( $request );
     // mount the router if it hasn't been mounted explicitly
-    if ( $this->router_mounted === false ) $this->inject( $this->router );
-    
-    // get a copy of the middleware stack
-    $middlewares = $this->middleware;
-    if( $next ) array_push( $middlewares, $next );
-    Utils::performFilters( $request, $response, $middlewares );
-    
+    $this( $request, $response );
     return $response;
     
   }
@@ -96,8 +90,14 @@ class App {
    * @return void
    * @author Beau Collins
    */
-  public function __invoke( $request, $response = null, $next = null ){
-    return $this->serve( $request, $response, $next );
+  public function __invoke( $request, $response, $next = null ){
+    
+    if ( $this->router_mounted === false ) $this->inject( $this->router );
+    
+    $middlewares = $this->middleware;
+    $cascade = new Cascade( $middlewares );
+    $cascade( $request, $response, $next );
+    
   }
   
   public function buildResponse( $request = null ){

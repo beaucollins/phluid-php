@@ -91,7 +91,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
     $app->inject( $handler );
     
     $request = new Request( 'GET', '/doesnt-exist' );
-    $response = $app( $request );
+    $response = $app->serve( $request );
         
     $this->assertSame( 'Uh, Oh', $response->getBody() );
     
