@@ -5,10 +5,10 @@ namespace Phluid\Middleware;
 class JsonBodyParser {
   
   private $array = true;
-  private $json_decode_options = 0; // JSON_BIGINT_AS_STRING option
-  private $depth = 512;
+  private $json_decode_options; // JSON_BIGINT_AS_STRING option
+  private $depth;
   
-  function __construct( $as_assoc_array = true, $depth = 512, $json_decode_options = 0 ){
+  function __construct( $as_assoc_array = true, $depth = 512, $json_decode_options = JSON_BIGINT_AS_STRING ){
     $this->array = $as_assoc_array;
     $this->depth = $depth;
     $this->options = $json_decode_options;
