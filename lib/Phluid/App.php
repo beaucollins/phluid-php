@@ -58,7 +58,7 @@ class App {
     
     ob_start();
     
-    $request = Request::fromServer()->withPrefix( $this->prefix );
+    $request = Request::fromServer();
     $response = $this->serve( $request );
     
     $this->sendResponseHeaders( $response );

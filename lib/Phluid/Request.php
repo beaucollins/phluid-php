@@ -91,13 +91,4 @@ class Request {
     }
   }
   
-  public function withPrefix( $prefix ){
-    if ( stripos( $this->path, $prefix ) === 0 ) {
-      $new_path = substr( $this->path, strlen( $prefix ) );
-      return new Request( $this->method, $new_path, $this->headers, $this->body );
-    } else {
-      return $this;
-    }
-  }
-  
 }
