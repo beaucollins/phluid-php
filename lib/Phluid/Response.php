@@ -46,7 +46,7 @@ class Response {
    * @author Beau Collins
    */
   public function setHeader( $key, $value ){
-    $this->headers[trim(strtoupper($key))] = $value;
+    $this->headers[trim( strtoupper( $key ) )] = $value;
   }
   
   public function getHeader( $key ){
