@@ -86,7 +86,7 @@ class Request {
       return $this->params[$key];
     } else if( array_key_exists( $key, $_GET ) ) {
       return $_GET[$key];
-    } else {
+    } else if( array_key_exists( $key, $_POST ) ) {
       return $_POST[$key];
     }
   }
