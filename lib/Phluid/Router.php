@@ -1,30 +1,20 @@
 <?php
-
 namespace Phluid;
-
+use Phluid\Middleware\Cascade;
 class Router {
   
   private $routes = array();
   
   public function __invoke( $req, $res, $next ){
     
-    $route = $this->find( $req );
-    if( $route ){
-      $route( $req, $res, $next );
-    } else {
+    $routes = $this->routes;
+    $cascade = new Cascade( $routes );
+    $cascade( $req, $res, function() use ($req){
       throw new Exception\NotFound( "No route matching {$req}" );
-    }
+    });
     
   }
   
-  public function find( $request ){
-    foreach( $this->routes as $route ){
-      if ( $matches = $route->matches($request) ) {
-        $request->params = $matches;
-        return $route;
-      }
-    }
-  }
   
   public function route( $matcher, $filters, $action = null ){
     

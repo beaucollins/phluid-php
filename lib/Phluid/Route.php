@@ -36,7 +36,7 @@ class Route {
   
   public function __invoke( $request, $response, $next ){
     if ( $matches = $this->matches( $request ) ) {
-      $response->params = $matches;
+      $request->params = $matches;
       $filters = $this->filters;
       $action = $this->action;
       $filters( $request, $response, function() use ( $request, $response, $next, $action ) {
