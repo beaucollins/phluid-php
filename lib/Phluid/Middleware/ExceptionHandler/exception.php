@@ -101,14 +101,14 @@
 <body id="500" onload="">
   <h1>Application Error</h1>
   <p><?php echo $exception->getMessage(); ?></p>
-  <p><?php echo $exception->getFile() ?> #<?php echo $exception->getLine() ?></p>
+  <p><?php echo common_path( $exception->getFile(), $app_path ) ?> #<?php echo $exception->getLine() ?></p>
   <a class="trace-toggle" href="#">Show Framework Traces</a>
   <ol>
   <?php foreach( $exception->getTrace() as $trace ): ?>
     <li <?php if(strpos($trace['file'], '/lib/Phluid/')) echo 'class="framework"' ?>>
       <div class="trace">
         <span class="invokeable"><?php echo $trace['class'].$trace['type'].$trace['function']?></span><br>
-        <span class="file"><?php echo $trace['file'] ?></span>
+        <span class="file"><?php echo common_path( $trace['file'], $app_path ) ?></span>
       </div>
       <div class="line"><a href="txmt://open/?url=<?php echo $trace['file']?>&line=<?php echo $trace['line'] ?>">Line #<?php echo $trace['line']; ?></a></div>
     </li>
