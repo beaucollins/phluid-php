@@ -29,6 +29,10 @@ class Request {
     $this->query   = $query;
   }
   
+  public function getMethod(){
+    return $this->method;
+  }
+  
   public function getBody(){
     return $this->body;
   }
@@ -39,6 +43,10 @@ class Request {
   
   public function getHost(){
     return $this->getHeader('host') ?: $this->getHeader('http_host');
+  }
+  
+  public function getContentType(){
+    return $this->getHeader('content-type');
   }
   
   public function getHeader( $key ){
