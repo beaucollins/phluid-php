@@ -38,6 +38,27 @@ class Response {
   }
   
   /**
+   * Returns the response status code, default is 200
+   *
+   * @return void
+   * @author Beau Collins
+   */
+  public function getStatus(){
+    return $this->status_code;
+  }
+  
+  /**
+   * Reteurn an associative array of all HTTP headers
+   *
+   * @return (array) header name and value pairs
+   * @author Beau Collins
+   */
+  public function getHeaders(){
+    $headers = $this->headers;
+    return $headers;
+  }
+  
+  /**
    * Set an HTTP response header
    *
    * @param string $key    header name
@@ -70,7 +91,7 @@ class Response {
   }
   
   public function statusHeader(){
-    return "HTTP/1.0 " . $this->statusMessage();
+    return "HTTP/1.1 " . $this->statusMessage();
   }
   
   public function statusMessage(){

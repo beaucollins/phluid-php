@@ -49,25 +49,6 @@ class App {
   }
   
   /**
-   * Starts up the app and renders a response to stdout
-   *
-   * @return void
-   * @author Beau Collins
-   */
-  public function run(){
-    
-    ob_start();
-    
-    $request = Request::fromServer();
-    $response = $this->serve( $request );
-    
-    $this->sendResponseHeaders( $response );
-    ob_end_clean();
-    echo $response->getBody();
-    
-  }
-    
-  /**
    * Given a Request it runs the configured middlewares and routes and
    * returns the response.
    *
@@ -106,22 +87,7 @@ class App {
       'default_layout' => $this->default_layout
     ) );
   }
-  
-  /**
-   * calls header for each header in Response.
-   * TODO: Better suited for some kind of adapter
-   *
-   * @param Response $response 
-   * @return void
-   * @author Beau Collins
-   */
-  private function sendResponseHeaders( $response ){
-    header( $response->statusHeader() );
-    $response->eachHeader( function( $name, $value ){
-      header( $name . ': ' . $value, true );
-    } );
-  }
-  
+    
   /**
    * Adds the given middleware to the app's middleware stack. Returns $this for
    * chainable calls.

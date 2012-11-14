@@ -10,30 +10,8 @@ class Request {
   var $params = array();
   var $memo = array();
   var $body;
- 
-  /**
-   * Static method that constructs a Request from global $_SERVER 
-   * variables for use with Apache/Nginx.
-   *
-   * @return Request
-   * @author Beau Collins
-   */
-  public static function fromServer(){
-    
-    $uri = $_SERVER['REQUEST_URI'];
-    $query_position = strpos( $uri, '?' );
-    if ($query_position) {
-      $path = substr( $uri, 0, $query_position );
-    } else {
-      $path = $uri;
-    }
-    
-    $request = new Request( $_SERVER['REQUEST_METHOD'], $path, $_SERVER );
-    $request->setBody( @file_get_contents('php://input') );
-    
-    return $request;
-  }
-  
+  var $query = array();
+   
   /**
    * Constructs a Request
    *
@@ -43,11 +21,12 @@ class Request {
    * @param string $body Body for the HTTP request
    * @author Beau Collins
    */
-  public function __construct( $method, $path, $headers = array(), $body=null ){
-    $this->method = $method;
-    $this->path = $path;
-    $this->headers = $headers;
-    $this->body = $body;
+  public function __construct( $method, $path, $query = array(), $headers = array(), $body=null ){
+    $this->method  = $method;
+    $this->path    = $path;
+    $this->headers = array_change_key_case( $headers, CASE_UPPER );
+    $this->body    = $body;
+    $this->query   = $query;
   }
   
   public function getBody(){
@@ -58,8 +37,16 @@ class Request {
     $this->body = $body;
   }
   
+  public function getHost(){
+    return $this->getHeader('host') ?: $this->getHeader('http_host');
+  }
+  
   public function getHeader( $key ){
     return Utils::array_val( $this->headers, strtoupper($key) );
+  }
+  
+  public function setHeader( $key, $val ){
+    $this->headers[strtoupper( $key )] = $val;
   }
   
   public function __get( $key ){
@@ -73,7 +60,15 @@ class Request {
   }
   
   public function __toString(){
-    return $this->method . ' ' . $this->path;
+    return $this->method . ' ' . $this->path . $this->queryString();
+  }
+  
+  public function queryString( $prefix = '?' ){
+    $query = http_build_query( $this->query );
+    if ( $query != "" && $prefix ) {
+      $query = $prefix . $query;
+    }
+    return $query;
   }
   
   /**
@@ -84,10 +79,10 @@ class Request {
   public function param( $key ){
     if ( array_key_exists( $key, $this->params ) ) {
       return $this->params[$key];
-    } else if( array_key_exists( $key, $_GET ) ) {
-      return $_GET[$key];
-    } else if( array_key_exists( $key, $_POST ) ) {
-      return $_POST[$key];
+    } else if( is_array( $this->query ) && array_key_exists( $key, $this->query ) ) {
+      return $this->query[$key];
+    } else if( is_array( $this->body ) && array_key_exists( $key, $this->body ) ) {
+      return $this->body[$key];
     }
   }
   
