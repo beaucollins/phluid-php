@@ -6,17 +6,31 @@ class StaticFiles {
   
   private $path;
   private $prefix;
+  private $mimes = array(
+    'css'      => 'text/css',
+    'txt'      => 'text/plain',
+    'jpg'      => 'image/jpeg',
+    'jpeg'     => 'image/jpeg',
+    'png'      => 'image/png',
+    'html'     => 'text/html',
+    'htm'      => 'text/htm',
+    'js'       => 'text/javascript',
+    'gif'      => 'image/gif',
+    'json'     => 'application/json',
+    'manifest' => 'text/cache-manifest'
+  );
   
-  function __construct( $path, $prefix = '/' ){
+  function __construct( $path, $prefix = '/', $mimes = array() ){
     $this->path = $path;
+    array_merge( $this->mimes, $mimes );
     $this->prefix = substr( $prefix, strlen( $prefix ) -1 ) == '/' ? $prefix : $prefix . '/';
   }
   
   function __invoke( $request, $response, $next ){
     if ( $this->isStaticRequest( $request ) ) {
       if( $path = $this->pathForRequest( $request ) ){
-        $file = new \finfo( FILEINFO_SYMLINK );        
-        $response->setHeader( 'Content-Type',  $file->file( $path, FILEINFO_MIME ) );
+        $file_info = pathinfo( $path );
+        $response->setHeader( 'Content-Type',  $this->mimeForFileSuffix( $file_info['extension'] ) );
         $response->setBody( file_get_contents( $path ) );
         return $response;
       }
@@ -31,10 +45,19 @@ class StaticFiles {
   
   private function pathForRequest( $request ){
     $path = $this->path . $request->path;
-    if ( is_readable( $path ) ) {
+    if ( is_readable( $path ) && !is_dir( $path ) ) {
       return $path;
     }
     return false;
+  }
+  
+  private function mimeForFileSuffix( $suffix ){
+    
+    $type = $this->mimes[strtolower( $suffix )];
+    if ( !$type ) {
+      $type = $this->deafultMimeType();
+    }
+    return $type;
   }
   
 }

@@ -23,7 +23,7 @@ class StaticFileTest extends \PHPUnit_Framework_TestCase {
     $this->assertSame( 200, $response->getStatus() );
     $this->assertSame( 'Hello world', $response->getBody() );
     $this->assertArrayHasKey( 'CONTENT-TYPE', $response->getHeaders() );
-    $this->assertSame( $response->getHeader( 'Content-Type'), 'text/plain; charset=us-ascii' );
+    $this->assertSame( $response->getHeader( 'Content-Type'), 'text/plain' );
     
     
   }
@@ -41,9 +41,26 @@ class StaticFileTest extends \PHPUnit_Framework_TestCase {
         
     $this->assertSame( 200, $response->getStatus() );
     $this->assertArrayHasKey( 'CONTENT-TYPE', $response->getHeaders() );
-    $this->assertSame( $response->getHeader( 'Content-Type'), 'image/jpeg; charset=binary' );
+    $this->assertSame( $response->getHeader( 'Content-Type'), 'image/jpeg' );
     
   }
+  
+  function testServeCss(){
     
+    $static_files = new StaticFiles( $this->file_path );
+    
+    $request = new \Phluid\Request( 'GET', '/style.css' );
+    $response = new \Phluid\Response( $request );
+    
+    $static_files( $request, $response, function() use ( $request ) {
+      $this->fail( "Didn't find a file for: $request" );
+    } );
+        
+    $this->assertSame( 200, $response->getStatus() );
+    $this->assertArrayHasKey( 'CONTENT-TYPE', $response->getHeaders() );
+    $this->assertSame( $response->getHeader( 'Content-Type'), 'text/css' );
+    
+  }
+  
   
 }
