@@ -82,4 +82,12 @@ class BodyParserTest extends \PHPUnit_Framework_TestCase {
     
   }
   
+  public function testMultipartSkipsParsing(){
+    $request = new Request( 'POST', '/', array(), array( 'Content-Type' => 'text/plain'), "Hello" );
+    $parser = new MultipartBodyParser( realpath( '.' ) . '/tests/uploads' );
+    $parser( $request, null, function() use($request){
+      $this->assertSame( "Hello", $request->getBody() );
+    });
+  }
+  
 }

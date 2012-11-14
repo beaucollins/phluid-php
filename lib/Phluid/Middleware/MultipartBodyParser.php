@@ -29,6 +29,9 @@ class MultipartBodyParser {
   }
   
   public static function parseBoundary( $header_value ){
+    if ( strpos( $header_value, 'multipart/form-data' ) === false ) {
+      return false;
+    }
     list( $type, $boundary ) = explode( '; boundary=', $header_value );
     if ( $type == 'multipart/form-data' && $boundary ) {
       return trim( $boundary );
