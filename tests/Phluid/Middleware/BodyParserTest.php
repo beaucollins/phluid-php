@@ -13,7 +13,7 @@ class BodyParserTest extends \PHPUnit_Framework_TestCase {
     $thing = new \stdClass();
     $thing->awesome = "YES";
     
-    $request = new Request( 'POST', '/', array( 'Content-Type' => 'application/json' ), json_encode( $thing ) );
+    $request = new Request( 'POST', '/', array(), array( 'Content-Type' => 'application/json' ), json_encode( $thing ) );
     
     $this->assertSame( json_encode( $thing ), $request->getBody() );
     
@@ -24,6 +24,18 @@ class BodyParserTest extends \PHPUnit_Framework_TestCase {
     };
     $parser( $request, null, $next );
     
+  }
+  
+  public function testFormParsing(){
+    
+    $parser = new FormBodyParser();
+    $body = array( 'field' => 'value' );
+    $request = new Request( 'POST', '/', array(), array( 'Content-Type' => 'application/x-www-form-urlencoded' ), http_build_query( $body ) );
+    $parser( $request, null, function() use($request, $body){
+        
+      $this->assertSame( $body, $request->getBody() );
+        
+    } );
   }
   
 }
