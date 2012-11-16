@@ -33,6 +33,10 @@ class Request {
     return $this->method;
   }
   
+  public function getPath(){
+    return $this->path;
+  }
+  
   public function getBody(){
     return $this->body;
   }
@@ -68,10 +72,10 @@ class Request {
   }
   
   public function __toString(){
-    return $this->method . ' ' . $this->path . $this->queryString();
+    return $this->method . ' ' . $this->path . $this->getQuerystring();
   }
   
-  public function queryString( $prefix = '?' ){
+  public function getQuerystring( $prefix = '?' ){
     $query = http_build_query( $this->query );
     if ( $query != "" && $prefix ) {
       $query = $prefix . $query;
