@@ -54,7 +54,10 @@ class Response {
    * @author Beau Collins
    */
   public function getHeaders(){
-    $headers = $this->headers;
+    $headers = array();
+    foreach ($this->headers as $name => $value ) {
+      $headers[$name] = is_array( $value ) ? implode( ', ', $value ) : $value;
+    }
     return $headers;
   }
   
@@ -67,14 +70,41 @@ class Response {
    * @author Beau Collins
    */
   public function setHeader( $key, $value ){
-    $this->headers[trim( strtoupper( $key ) )] = $value;
+    if ( !is_array( $value ) ) {
+      $value = array( $value );
+    }
+    $key = $this->normalizeHeaderKey( $key );
+    if ( !array_key_exists( $key, $this->headers ) ) {
+      $this->headers[$key] = $value;
+    } else {
+      $headers = $this->headers[$key];
+      $this->headers[$key] = array_merge( $headers, $value );
+    }
   }
   
   public function getHeader( $key ){
-    $key = strtoupper( $key );
+    $key = $this->normalizeHeaderKey( $key );
     if ( array_key_exists( $key, $this->headers ) ) {
-      return $this->headers[$key];
+      $val = $this->headers[$key];
+      if ( count( $val ) > 1 ) {
+        return $val;
+      } else {
+        return $val[0];
+      }
     }
+  }
+  
+  public function unsetHeader($key){
+    $key = $this->normalizeHeaderKey( $key );
+    if ( array_key_exists( $key, $this->headers ) ) {
+      $header = $this->headers[$key];
+      unset( $this->headers[$key] );
+      return $header;
+    }
+  }
+  
+  private function normalizeHeaderKey( $key ){
+    return strtoupper( $key );
   }
   
   /**
