@@ -2,7 +2,7 @@
 
 namespace Phluid;
 
-class Request {
+class Request implements \ArrayAccess {
  
   var $method;
   var $path;
@@ -54,11 +54,21 @@ class Request {
   }
   
   public function getHeader( $key ){
-    return Utils::array_val( $this->headers, strtoupper($key) );
+    return Utils::array_val( $this->headers, $this->normalizeHeaderKey( $key ) );
   }
   
   public function setHeader( $key, $val ){
-    $this->headers[strtoupper( $key )] = $val;
+    $this->headers[ $this->normalizeHeaderKey( $key )] = $val;
+  }
+  
+  public function unsetHeader( $key ){
+    if ( $this->headerExists( $key ) ) {
+      unset( $this->headers[ $this->normalizeHeaderKey( $key ) ] );
+    }
+  }
+    
+  public function headerExists( $key ){
+    return array_key_exists( $this->headers, $this->normalizeHeaderKey( $key ) );
   }
   
   public function __get( $key ){
@@ -70,6 +80,34 @@ class Request {
   public function __set( $key, $value ){
     $this->memo[$key] = $value;
   }
+  
+  public function __unset( $key ){
+    if( array_key_exists( $key, $this->memo ) ){
+      unset( $this->memo[$key] );
+    }
+  }
+  
+  /**
+   * ArrayAccess methods to access headers via array syntax
+   *
+   * @author Beau Collins
+   */
+  public function offsetExists ( $offset ){
+    return $this->headerExists( $offset );
+  }
+  
+  public function offsetGet ( $offset ){
+    return $this->getHeader( $offset );
+  }
+  
+  public function offsetSet ( $offset , $value ){
+    $this->setHeader( $offset, $value );
+  }
+  
+  public function offsetUnset ( $offset ){
+    
+  }
+  
   
   public function __toString(){
     return $this->method . ' ' . $this->path . $this->getQuerystring();
@@ -96,6 +134,10 @@ class Request {
     } else if( is_array( $this->body ) && array_key_exists( $key, $this->body ) ) {
       return $this->body[$key];
     }
+  }
+  
+  public static function normalizeHeaderKey( $key ){
+    return strtoupper( $key );
   }
   
 }

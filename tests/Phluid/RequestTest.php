@@ -21,5 +21,11 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     $request->setBody( "Hello world" );
     $this->assertSame( "Hello world", $request->getBody() );
   }
+  
+  public function testAccessHeadersAsArray(){
+    $request = new Request( 'GET', '/hello', array(), array( 'Content-Type' => 'text/css' ) );
+    $this->assertSame( 'text/css', $request['content-type'] );
+    $this->assertSame( 'text/css', $request['Content-Type'] );
+  }
     
 }
