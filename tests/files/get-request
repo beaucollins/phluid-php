@@ -1,0 +1,10 @@
+GET / HTTP/1.1
+Host: en.blog.wordpress.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/536.26.17 (KHTML, like Gecko) Version/6.0.2 Safari/536.26.17
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us
+Accept-Encoding: gzip, deflate
+Cookie: wordpress_eli=1; wpc_wpc=account=rhc3&avatar=https%3A%2F%2F1.gravatar.com%2Favatar%2F709977fc8f4496966d454a01eab615f6%3Fs%3D25%26amp%3Bd%3Dhttps%253A%252F%252Fs2.wp.com%252Fwp-content%252Fmu-plugins%252Fhighlander-comments%252Fimages%252Fwplogo.png&email=robert%40automattic.com&link=http%3A%2F%2Fviewsource.beaucollins.com&name=Robert&uid=27945302&access_token=c82f0fdf7a3719edd282c6a184b079c37f062560; km_uq=; km_ai=rhc3; km_ni=rhc3; wordpress_logged_in=rhc3%7C1355337392%7C565d2b64f6abf61dfb58a47fa697c5aa; __utma=214977736.1791687562.1349379370.1350594339.1354127784.3; __utmz=214977736.1349379370.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); SSE_upgrade-links-in-newdash=original; optimizelyBuckets=%7B%7D; sse_paypal-express-skip-confirmation-new=original; km_lv=x; grvinsights=e4602cb151cd6a625ebe83585e3ea864; __qca=P0-1783966178-1349379370027; optimizelyEndUserId=oeu1349379369933r0.8264589456375688
+Connection: keep-alive
+
+

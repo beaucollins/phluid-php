@@ -9,10 +9,17 @@
     "name" : "Beau Collins",
     "email" : "beaucollins@gmail.com",
     "homepage" : "http://viewsource.beaucollins.com"
-  } 
+  }
+  ],
+  "repositories" : [
+    {
+      "type" : "git",
+      "url" : "http://redimastudio.com/git/react.git"
+    }
   ],
   "require" : {
-    "php" : ">=5.3"
+    "php" : ">=5.3",
+    "react/react" : "dev-phluid"
   },
   "require-dev" : {
     "phpunit/phpunit" : "3.7.*"

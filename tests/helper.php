@@ -1,3 +1,3 @@
 <?php
 
-require_once 'lib/Phluid/Autoload.php';
+require_once 'vendor/autoload.php';
