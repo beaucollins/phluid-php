@@ -1,5 +1,5 @@
 {
-    "hash": "7d2a12ff0ab877ee4fce0e3990c7f344",
+    "hash": "5832f5b7a2d94d48fb5a9c1516fe54bc",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -214,18 +214,68 @@
             ]
         },
         {
-            "name": "react/react",
-            "version": "dev-phluid",
+            "name": "react/promise",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
-                "url": "http://redimastudio.com/git/react.git",
-                "reference": "600dea8d16458c87659211f638d42d6e6a0ce5c4"
+                "url": "https://github.com/reactphp/promise",
+                "reference": "v1.0.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/reactphp/promise/archive/v1.0.3.zip",
+                "reference": "v1.0.3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "time": "2012-11-17 21:29:48",
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "React\\Promise": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@googlemail.com",
+                    "homepage": "http://sorgalla.com",
+                    "role": "maintainer"
+                }
+            ],
+            "description": "A lightweight implementation of CommonJS Promises/A for PHP"
+        },
+        {
+            "name": "react/react",
+            "version": "v0.2.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/react",
+                "reference": "v0.2.5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/reactphp/react/archive/v0.2.5.zip",
+                "reference": "v0.2.5",
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
                 "evenement/evenement": "1.0.*",
                 "guzzle/http": "3.0.*",
-                "guzzle/parser": "3.0.*"
+                "guzzle/parser": "3.0.*",
+                "react/promise": "1.0.*"
             },
             "replace": {
                 "react/event-loop": "self.version",
@@ -235,7 +285,11 @@
                 "react/http-client": "self.version",
                 "react/dns": "self.version"
             },
-            "time": "1352917403",
+            "require-dev": {
+                "ext-libevent": "*",
+                "ext-libev": "*"
+            },
+            "time": "2012-11-26 02:46:34",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -255,11 +309,7 @@
             "keywords": [
                 "event-loop",
                 "reactor"
-            ],
-            "support": {
-                "issues": "https://github.com/reactphp/react/issues",
-                "irc": "irc://irc.freenode.org/reactphp"
-            }
+            ]
         },
         {
             "name": "symfony/event-dispatcher",
@@ -321,7 +371,7 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "react/react": 20
-    }
+    "stability-flags": [
+
+    ]
 }
