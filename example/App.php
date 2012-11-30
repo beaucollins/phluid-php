@@ -1,6 +1,6 @@
 <?php
 
-require_once realpath('../') . '/lib/Phluid/Autoload.php';
+require_once( realpath( '../' ) . '/vendor/autoload.php' );
   
 $app = new Phluid\App();
 
@@ -53,3 +53,5 @@ $app->get( '/profile', function( $req, $res, $next ){
   $user->url = "http://viewsource.beaucollins.com";
   $res->render( 'profile', array( 'user' => $user ) );
 });
+
+return $app;
