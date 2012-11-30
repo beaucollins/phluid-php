@@ -2,7 +2,10 @@
 
 namespace Phluid;
 
+use Phluid\Http\Server;
+use React\Socket\Server as SocketServer;
 use Phluid\Middleware\Cascade;
+use React\EventLoop\Factory as LoopFactory;
 
 class App {
   
@@ -24,6 +27,23 @@ class App {
     $this->settings = new Settings( array_merge( $defaults, $options ) );
     $this->router = new Router();
     
+  }
+  
+  public function listen( $port, $host = '127.0.0.1' ){
+    $loop = LoopFactory::create();
+    $socket = new SocketServer( $loop );
+    $http = new Server( $socket, $loop );
+    $http->on( 'request', function( $request, $response ){
+      $app = $this;
+      $response->setOptions( array(
+        'view_path' => $this->view_path,
+        'default_layout' => $this->default_layout
+      ) );
+      $app( $request, $response );
+    });
+    $socket->listen( $port, $host );
+    $loop->run();
+    return $http;
   }
   
   /**
@@ -163,5 +183,5 @@ class App {
   public function post( $path, $filters, $action = null ){
     return $this->on( 'POST', $path, $filters, $action );
   }
-  
+    
 }

@@ -18,12 +18,7 @@ class Server extends EventEmitter implements ServerInterface {
   function handleConnection( ConnectionInterface $conn ){
     
     $server = $this;
-    
-    $handle = fopen( 'tests/files/out', 'w' );
-    $conn->on('data', function( $data ) use ( $handle ){
-      fwrite( $handle, $data );
-    });
-    
+        
     $request = new Request( $conn );
     $request->on( 'headers' , function( Headers $headers, $trailing ) use ( $server, $conn, $request ) {
       

@@ -1,5 +1,6 @@
 <?php
 namespace Phluid\Http;
+use React\Socket\ConnectionInterface;
 use Evenement\EventEmitter;
 
 define( 'HEADER_EOL', "\r\n" );
@@ -10,7 +11,7 @@ class HeaderParser extends EventEmitter {
   private $conn;
   private $headers;
   
-  function __construct( \React\Socket\ConnectionInterface $conn ){
+  function __construct( ConnectionInterface $conn ){
     $this->conn = $conn;
     $conn->on( 'data', $this );
   }
