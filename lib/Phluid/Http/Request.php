@@ -46,7 +46,14 @@ class Request extends EventEmitter implements ReadableStreamInterface {
           $contentLength += strlen( $trailing );
           $this->emit( 'data', array( $trailing ) );
         }
+        
         $totalLength = $this->getContentLength();
+        
+        if ( $contentLength == $totalLength ) {
+          $this->close();
+          return;
+        }
+        
         $this->conn->on( 'data', function( $data ) use ( &$contentLength, $totalLength ){
           // TODO: Chunk encoding
           // TODO: Length exceeds Content-Length header 401
@@ -108,6 +115,10 @@ class Request extends EventEmitter implements ReadableStreamInterface {
     }
   }
   
+  public function getContentType(){
+    return $this->headers['content-type'];
+  }
+  
   public function __get( $key ){
     if ( $this->__isset( $key ) ) {
       return $this->memo[$key];
@@ -119,7 +130,7 @@ class Request extends EventEmitter implements ReadableStreamInterface {
   }
   
   public function __isset( $key ){
-    array_key_exists( $key, $this->memo );
+    return array_key_exists( $key, $this->memo );
   }
   
   public function __unset( $key ){

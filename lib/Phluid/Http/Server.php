@@ -16,20 +16,15 @@ class Server extends EventEmitter implements ServerInterface {
   }
   
   function handleConnection( ConnectionInterface $conn ){
-    
-    $server = $this;
-        
+            
     $request = new Request( $conn );
-    $request->on( 'headers' , function( Headers $headers, $trailing ) use ( $server, $conn, $request ) {
+    $request->on( 'headers' , function( Headers $headers, $trailing ) use ( $conn, $request ) {
       
       $response = new Response( $conn, $request );
             
       // notify of the new request with request and response pair
-      $server->emit( 'request', array( $request, $response ) );
-      
-      // emit data if there was trailing data on the headers
-      $request->emit( 'data', array( $trailing ) );
-      
+      $this->emit( 'request', array( $request, $response ) );
+            
     } );
     
   }

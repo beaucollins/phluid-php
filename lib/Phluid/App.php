@@ -3,6 +3,7 @@
 namespace Phluid;
 
 use Phluid\Http\Server;
+use React\Http\ServerInterface as HttpServerInterface;
 use React\Socket\Server as SocketServer;
 use Phluid\Middleware\Cascade;
 use React\EventLoop\Factory as LoopFactory;
@@ -13,6 +14,10 @@ class App {
   private $middleware = array();
   private $settings;
   private $router_mounted = false;
+  
+  public $http;
+  public $socket;
+  public $loop;
   
   /**
    * Passes an array of settings to initialize Settings with.
@@ -29,10 +34,12 @@ class App {
     
   }
   
-  public function listen( $port, $host = '127.0.0.1' ){
-    $loop = LoopFactory::create();
-    $socket = new SocketServer( $loop );
-    $http = new Server( $socket, $loop );
+  public function createServer( HttpServerInterface $http = null ){
+    if ( $http === null ) {
+      $this->loop = $loop = LoopFactory::create();
+      $this->socket = $socket = new SocketServer( $loop );
+      $this->http = $http = new Server( $socket, $loop );
+    }
     $http->on( 'request', function( $request, $response ){
       $app = $this;
       $response->setOptions( array(
@@ -41,9 +48,13 @@ class App {
       ) );
       $app( $request, $response );
     });
-    $socket->listen( $port, $host );
-    $loop->run();
-    return $http;
+    return $this;
+  }
+  
+  public function listen( $port, $host = '127.0.0.1' ){
+    $this->socket->listen( $port, $host );
+    $this->loop->run();
+    return $this;
   }
   
   /**
@@ -66,22 +77,6 @@ class App {
    */
   public function __set( $key, $value ){
     return $this->settings->__set( $key, $value );
-  }
-  
-  /**
-   * Given a Request it runs the configured middlewares and routes and
-   * returns the response.
-   *
-   * @param Request $request 
-   * @return Response
-   * @author Beau Collins
-   */
-  public function serve( $request ){
-    $response = $this->buildResponse( $request );
-    // mount the router if it hasn't been mounted explicitly
-    $this( $request, $response );
-    return $response;
-    
   }
   
   /**

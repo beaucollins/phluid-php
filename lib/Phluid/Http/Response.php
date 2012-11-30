@@ -16,10 +16,12 @@ class Response extends EventEmitter implements WritableStreamInterface {
   private $headWritten;
   private $chunkedEncoding = true;
   private $options;
+  private $request;
   
   private $headers = array();
   
   function __construct( ConnectionInterface $conn, Request $request ){
+    $this->request = $request;
     $this->conn = $conn;
     
     $this->conn->on('end', function () {
@@ -47,7 +49,7 @@ class Response extends EventEmitter implements WritableStreamInterface {
   }
   
   public function setOptions( array $options ){
-    array_merge( $this->options, $options );
+    $this->options = array_merge( $this->options, $options );
   }
   
   /**
@@ -92,13 +94,11 @@ class Response extends EventEmitter implements WritableStreamInterface {
   
   public function renderString( $string, $content_type="text/plain", $status = 200 ){
     $this->status_code = $status;
-    $this->raw_body = (string) $string;
     $this->setHeader( 'Content-Type', $content_type );
-    $this->setHeader( 'Content-Length', strlen( $this->raw_body ) );
+    $this->setHeader( 'Content-Length', strlen( (string) $string ) );
     // write the headers and the body
     $this->writeHead( $status, $this->getHeaders() );
-    $this->end( $this->raw_body );
-    
+    $this->end( (string) $string );
   }
   
   /**
@@ -131,6 +131,8 @@ class Response extends EventEmitter implements WritableStreamInterface {
     if ( $this->headWritten ) {
       throw new \Exception("Response head has already been written");
     }
+    
+    $this->emit( 'headers' );
     
     $this->conn->write( $this->statusHeader( $status ) . "\r\n" );
     $this->eachHeader( function( $name, $value ){

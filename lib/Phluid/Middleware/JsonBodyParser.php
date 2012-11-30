@@ -16,10 +16,18 @@ class JsonBodyParser {
   
   //Just JSON
   function __invoke( $request, $response, $next ){
-    if ( strpos( $request->getBody(), "{") === 0 || $request->getHeader('Content-Type') == 'application/json' ) {
-      $request->setBody( json_decode( $request->getBody(), $this->array ) );
+    if ( $request->getHeader('Content-Type') == 'application/json' ) {
+      $body = "";
+      $request->on( 'data', function( $data ) use ( &$body ){
+        $body .= $data;
+      } );
+      $request->on( 'end', function() use ( &$body, $request, $next ){
+        $request->body = json_decode( $request->getBody(), $this->array );
+        $next();
+      } );
+    } else {
+      $next();      
     }
-    $next();
   }
   
 }
