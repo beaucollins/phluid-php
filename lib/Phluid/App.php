@@ -52,6 +52,9 @@ class App {
   }
   
   public function listen( $port, $host = '127.0.0.1' ){
+    if ( !$this->http ) {
+      $this->createServer();
+    }
     $this->socket->listen( $port, $host );
     $this->loop->run();
     return $this;
