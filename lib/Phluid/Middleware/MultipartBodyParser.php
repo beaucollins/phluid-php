@@ -9,11 +9,12 @@ define( 'MULTIPART_CONTENT_TYPE', 'multipart/form-data' );
 class MultipartBodyParser {
   
   private $upload_dir;
+  private $cleanup = false;
   
   function __construct( $upload_dir = './tmp', $clean_after_request = true ){
     $this->upload_dir = $upload_dir;
     if(  !is_dir( $upload_dir ) ) mkdir( $upload_dir, 0777, true );
-    
+    $this->cleanup = $clean_after_request;
   }
   
   function __invoke( $request, $response, $next ){
@@ -28,11 +29,13 @@ class MultipartBodyParser {
       $parser = new MultipartStreamParser( $this->upload_dir, $boundary );
       $request->pipe( $parser );
       $parser->on( 'end', function( $content, $uploads ) use ( $request, $response, $next ){
-        $response->once( 'close', function() use ( $uploads ){
-          foreach ( $uploads as $upload ) {
-            unlink( $upload->content );
-          }
-        } );
+        if( $this->cleanup && count( $uploads ) > 0 ){
+          $response->once( 'end', function() use ( $uploads ){
+            foreach ( $uploads as $upload ) {
+              unlink( $upload->content );
+            }
+          } );
+        }
         $request->body = $content;
         $next();
       });
