@@ -2,15 +2,13 @@
 
 A microframework for PHP. Quite heavily inspired by [Express][]. [![Build Status](https://secure.travis-ci.org/beaucollins/phluid-php.png?branch=master)](https://travis-ci.org/beaucollins/phluid-php)
 
+Built on top of [ReactPHP](https://github.com/reactphp/react).
+
 [Express]: http://expressjs.com "Express web application framework for node"
 
 ## Install
 
-Option 1) Download
-
-Download [Phluid][], unzip and require `path/to/Phluid/Autoload.php`
-
-Optioni 2) [Composer][] sample `composer.json`
+[Composer][] sample `composer.json`
 
     {
       "name" : "beaucollins/sample-app",
@@ -21,7 +19,7 @@ Optioni 2) [Composer][] sample `composer.json`
         }
       ],
       "require" : {
-        "phluid/phluid":"master-dev"
+        "phluid/phluid":"react-dev"
       }
     }
 
@@ -47,17 +45,17 @@ Download [Phluid][] to a server somewhere.
       $response->renderText( "Hello {$request->param('name')}");
     });
     
-    $app->run();
+    $app->listen( 4000 );
     
     
-Save that to `index.php` and put it on a webserver somewhere and have it serve all file
-requests with an `.htaccess` like this one.
+Save that to `server.php` and then boot up your server:
 
-    RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(.*)?$ index.php [L]
+    $> php server.php
+  
+Open [http://localhost:4000/][example] in your browser.
 
 [Phluid]: https://github.com/beaucollins/phluid-php/tarball/master "phluid-php master tarball"
+[example]: http://localhost:4000/
 
 ## Middleware
 
@@ -85,6 +83,18 @@ doesn't need to handle the request it can simply call `$next()`.
     $warden = new Warden();
     $app->inject( array( $warden, 'protect' ) );
     // calls $warden->protect( $request, $response, $next )
+    
+There are quite a few middlewares provided already:
+
+- BasicAuth: add's support for HTTP Basic Auth header parsing
+- Cascade: Chain middleware together
+- ExceptionHandler: Renders a stack trace error page for debugging
+- FormBodyParser: Parses form encoded request bodies
+- JsonBodyParser: Parses JSON request bodies
+- MultipartBodyParser: Parses multipart requests
+- Prefix: Mounts middleware under a prefix 
+- RequestTimer: Records time for the full request/response cycle
+- StaticFiles: Serves static files from a specified folder
 
 ## Filters
 
