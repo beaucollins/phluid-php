@@ -21,26 +21,25 @@ class StaticFiles {
   );
   
   function __construct( $path, $prefix = '/', $mimes = array() ){
-    $this->path = $path;
-    array_merge( $this->mimes, $mimes );
-    $this->prefix = substr( $prefix, strlen( $prefix ) -1 ) == '/' ? $prefix : $prefix . '/';
+    $this->path = substr( $path, -1 ) == '/' ? substr( $path, 0, -1 ) : $path;
+    $this->mimes = array_merge( $this->mimes, $mimes );
+    $this->prefix = substr( $prefix, -1 ) == '/' ? $prefix : $prefix . '/';
   }
   
   function __invoke( $request, $response, $next ){
     if ( $this->isStaticRequest( $request ) ) {
       if( $path = $this->pathForRequest( $request ) ){
         $file_info = pathinfo( $path );
-        $response->setHeader( 'Content-Type',  $this->mimeForFileSuffix( $file_info['extension'] ) );
-        $response->setBody( file_get_contents( $path ) );
-        return $response;
+        $response->setHeader( 'Content-Type', $this->mimeForFileSuffix( $file_info['extension'] ) );
+        $response->sendFile( $path );
+        return;
       }
     }
-    return $next();
+    $next();      
   }
   
   private function isStaticRequest( $request ){
-    return strpos( $request->path, $this->prefix ) === 0;
-    
+    return strpos( $request->path, $this->prefix ) === 0 && $request->getMethod() == 'GET';
   }
   
   private function pathForRequest( $request ){
