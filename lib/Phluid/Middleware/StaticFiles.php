@@ -20,6 +20,8 @@ class StaticFiles {
     'manifest' => 'text/cache-manifest'
   );
   
+  public $defaultMimeType = "application/octet-stream";
+  
   function __construct( $path, $prefix = '/', $mimes = array() ){
     $this->path = substr( $path, -1 ) == '/' ? substr( $path, 0, -1 ) : $path;
     $this->mimes = array_merge( $this->mimes, $mimes );
@@ -51,12 +53,12 @@ class StaticFiles {
   }
   
   private function mimeForFileSuffix( $suffix ){
-    
-    $type = $this->mimes[strtolower( $suffix )];
-    if ( !$type ) {
-      $type = $this->deafultMimeType();
+    $suffix = strtolower( $suffix );
+    if ( array_key_exists( $suffix, $this->mimes ) ) {
+      return $this->mimes[strtolower( $suffix )];
+    } else {
+      return $this->defaultMimeType;
     }
-    return $type;
   }
-  
+    
 }
