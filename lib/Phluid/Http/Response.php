@@ -143,16 +143,39 @@ class Response extends EventEmitter implements WritableStreamInterface {
     $this->renderString( json_encode($object), "application/json" );
   }
   
-  public function sendFile( $path, $options = array(), $status = 200 ){
+  public function sendFile( $path, $options_or_status = array(), $status = 200 ){
     // TODO: handle if a file doesn't exist or isn't readable
+    if ( is_int( $options_or_status )) {
+      $status = $options_or_status;
+      $options = array();
+    } else {
+      $options = $options_or_status;
+    }
+    if ( array_key_exists( 'attachment', $options ) ) {
+      $disposition = $options['attachment'];
+      if( $disposition === true ){
+        $disposition = "attachment;";
+      } else {
+        $disposition = "attachment; filename=\"$disposition\"";
+      }
+      $this->setHeader( 'Content-Disposition', $disposition );
+    }
     $this->setHeader( 'Content-Length', filesize( $path ) );
     $this->sendHeaders( $status );
     if( $handle = fopen( $path, 'r' ) ){
-      while( $string = fread( $handle, 1024 * 4 ) ){
-        $this->write( $string );
-      }
-      fclose( $handle );          
-      $this->end();
+      $readFile = function() use ( $handle ){
+        while( $string = fread( $handle, $this->conn->bufferSize ) ){
+          if ( feof( $handle ) ) {
+            fclose( $handle );
+            $this->end();
+            return;
+          } else {
+            if( !$this->write( $string ) ) return;
+          }
+        }
+      };
+      $this->on( 'drain', $readFile );
+      $readFile();
     }
   }
   
