@@ -63,6 +63,12 @@ class Response extends EventEmitter implements WritableStreamInterface {
     return $headers;
   }
   
+  public function setHeaders( $headers ){
+    foreach ( $headers as $name => $value ) {
+      $this->setHeader( $name, $value );
+    }
+  }
+  
   /**
    * Set an HTTP response header
    *
@@ -82,6 +88,11 @@ class Response extends EventEmitter implements WritableStreamInterface {
     }
   }
   
+  public function redirectTo( $path, $status = 301 ){
+    $this->setHeader( 'location', $path );
+    $this->sendHeaders( $status );
+    $this->end();
+  }
   
   public function render( $template, $locals = array(), $options = array() ){
     $layout = Utils::array_val( $options, 'layout', $this->options['default_layout'] );
@@ -97,7 +108,7 @@ class Response extends EventEmitter implements WritableStreamInterface {
     $this->setHeader( 'Content-Type', $content_type );
     $this->setHeader( 'Content-Length', strlen( (string) $string ) );
     // write the headers and the body
-    $this->writeHead( $status, $this->getHeaders() );
+    $this->sendHeaders( $status );
     $this->end( (string) $string );
   }
   
@@ -125,6 +136,24 @@ class Response extends EventEmitter implements WritableStreamInterface {
    */
   public function renderJSON( $object, $status = 200 ){
     $this->renderString( json_encode($object), "application/json" );
+  }
+  
+  public function sendFile( $path, $options = array(), $status = 200 ){
+    // TODO: handle if a file doesn't exist or isn't readable
+    $this->setHeader( 'Content-Length', filesize( $path ) );
+    $this->sendHeaders( $status );
+    if( $handle = fopen( $path, 'r' ) ){
+      while( $string = fread( $handle, 1024 * 4 ) ){
+        $this->write( $string );
+      }
+      fclose( $handle );          
+      $this->end();
+    }
+  }
+  
+  public function sendHeaders( $status = 200, $headers = array() ){
+    $this->setHeaders( $headers );
+    $this->writeHead( $status, $this->headers );
   }
   
   public function writeHead( $status = 200, $headers = array() ){
@@ -195,7 +224,7 @@ class Response extends EventEmitter implements WritableStreamInterface {
           $this->conn->write( "0\r\n\r\n" );
       }
 
-      $this->emit( 'close' );
+      $this->emit( 'end' );
       $this->removeAllListeners();
       $this->conn->end();
   }
