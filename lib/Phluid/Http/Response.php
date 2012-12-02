@@ -17,6 +17,7 @@ class Response extends EventEmitter implements WritableStreamInterface {
   private $chunkedEncoding = true;
   private $options;
   private $request;
+  public $status = 200;
   
   private $headers = array();
   
@@ -42,6 +43,10 @@ class Response extends EventEmitter implements WritableStreamInterface {
       'view_path' => null
     );
     
+  }
+  
+  public function __toString(){
+    return (string) $this->status;
   }
   
   public function getOptions(){
@@ -151,9 +156,14 @@ class Response extends EventEmitter implements WritableStreamInterface {
     }
   }
   
-  public function sendHeaders( $status = 200, $headers = array() ){
+  public function sendHeaders( $status_or_headers = 200, $headers = array() ){
+    if ( !is_null( $status_or_headers ) and is_int( $status_or_headers ) ) {
+      $this->status = $status_or_headers;
+    } else if ( !is_null( $status_or_headers ) && is_array( $status_or_headers ) ) {
+      $headers = $status_or_headers;
+    }
     $this->setHeaders( $headers );
-    $this->writeHead( $status, $this->headers );
+    $this->writeHead( $this->status, $this->headers );
   }
   
   public function writeHead( $status = 200, $headers = array() ){
