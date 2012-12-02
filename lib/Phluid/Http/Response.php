@@ -88,7 +88,7 @@ class Response extends EventEmitter implements WritableStreamInterface {
     }
   }
   
-  public function redirectTo( $path, $status = 301 ){
+  public function redirectTo( $path, $status = 302 ){
     $this->setHeader( 'location', $path );
     $this->sendHeaders( $status );
     $this->end();
