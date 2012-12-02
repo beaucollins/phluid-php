@@ -16,7 +16,7 @@ class RequestTimer {
       $duration = ceil( ( microtime( TRUE ) - $start) * 1000 );
       $response->setHeader( $this->header, "$duration ms" );
     } );
-    $response->once( 'close', function() use ($start, $request ){
+    $response->once( 'end', function() use ($start, $request ){
       $duration = ceil( ( microtime( TRUE ) - $start) * 1000 );
       echo "Completed in $duration ms " . PHP_EOL;
     });
