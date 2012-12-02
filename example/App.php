@@ -6,20 +6,19 @@ $app = new Phluid\App( array(
   'default_layout' => 'layout'
 ) );
 
-/**
- * Adds an X-SERVER header to each request
- * @author Beau Collins
- */
+$app->inject( new \Phluid\Middleware\RequestTimer() );
+$app->inject( function( $request, $response, $next ){
+  $response->once( 'end', function() use ( $request, $response ){
+    echo "$request $response in $request->duration ms" . PHP_EOL;
+  });
+  $next();
+} );
+
 $app->inject( function( $req, $res, $next ){
   $res->setHeader('X-Powered-By', 'Awesomesauce');
   $next();
 } );
 
-$app->inject( new \Phluid\Middleware\RequestTimer() );
-$app->inject( function( $request, $response, $next ){
-  echo $request . PHP_EOL;
-  $next();
-} );
 $app->inject( new \Phluid\Middleware\ExceptionHandler );
 $app->inject( new \Phluid\Middleware\BasicAuth( function( $credentials, $success, $failure ){
   $username = $credentials['username'];
@@ -32,10 +31,6 @@ $app->inject( new \Phluid\Middleware\BasicAuth( function( $credentials, $success
 } ) );
 $app->inject( new \Phluid\Middleware\StaticFiles( __DIR__ . '/public' ) );
 
-/**
- * takes any request that ends in /reverse and string reverses the body
- * @author Beau Collins
- */
 $app->inject( function( $req, $res, $next ){
   $reverse = false;
   $new_path = preg_replace( '/\/reverse\/?$/', '/', $req->path );
@@ -74,7 +69,7 @@ $app->get( '/form', function( $request, $response ){
 } );
 
 $app->post( '/form', new \Phluid\Middleware\FormBodyParser() , function( $request, $response ){
-  $response->render( 'form' );
+  $response->render( 'form', array( 'hello' => $request->body['hello'] ) );
 } );
 
 $app->get( '/upload', function( $request, $response ){
@@ -99,5 +94,14 @@ $app->get( '/wait', function( $request, $response ){
   shell_exec( 'sleep 15' );
   $response->render( 'wait' );
 } );
+
+$app->get( '/updown', function( $request, $response, $next ){
+  $response->render( 'updown' );
+});
+  
+$app->post( '/updown', new \Phluid\Middleware\MultipartBodyParser(), function( $request, $response, $next ){
+  $file = $request->body['file'];
+  $response->sendFile( $file, array( 'attachment' => $file->filename ) );
+});
 
 return $app;
