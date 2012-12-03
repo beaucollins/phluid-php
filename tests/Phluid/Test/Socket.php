@@ -3,7 +3,7 @@ namespace Phluid\Test;
 use Evenement\EventEmitter;
 use React\Socket\ServerInterface;
 
-class SocketStub extends EventEmitter implements ServerInterface {
+class Socket extends EventEmitter implements ServerInterface {
   
   public function listen( $port, $host = '127.0.0.1' ) {
     

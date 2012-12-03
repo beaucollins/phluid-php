@@ -3,17 +3,11 @@ namespace Phluid\Http;
 
 require_once 'tests/helper.php';
 
-use Phluid\Tests\SocketStub;
-use Phluid\Tests\ConnectionStub;
-
 class ServerTest extends \PHPUnit_Framework_TestCase {
   
   function testRequest(){
-    
-    $socket = new SocketStub();
-    $conn = new ConnectionStub();
-    
-    $server = new Server( $socket );
+      
+    $server = new Server( $this->socket );
     
     $server->on( 'request', function( $request, $response ){
       
@@ -27,20 +21,14 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
             
     } );
     
-    $socket->emit( 'connection', array( $conn ) );
-    
-    // let's stream in a file
-    $request_file = realpath('.') . '/tests/files/get-request';
-    $conn->streamFile( $request_file );
+    $this->sendFile( realpath('.') . '/tests/files/get-request' );
     
   }
   
   function testPostRequest(){
     
-    $socket = new SocketStub();
-    $conn = new ConnectionStub();
     
-    $server = new Server( $socket );
+    $server = new Server( $this->socket );
     
     $server->on( 'request', function( $request, $response ){
       
@@ -61,10 +49,19 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
       
     } );
     
-    $socket->emit( 'connection', array( $conn ) );
+    $this->sendFile( realpath('.') . '/tests/files/post-request' );
     
+  }
+  
+  function setup(){
+    $this->socket = new \Phluid\Test\Socket();
+    $this->conn = new \Phluid\Test\Connection( $this->socket );
+  }
+  
+  private function sendFile( $file ){
     // let's stream in a file
-    $conn->streamFile( realpath('.') . '/tests/files/post-request' );
+    $this->socket->emit( 'connection', array( $this->conn ) );
+    $this->conn->streamFile( $file );
     
   }
   
