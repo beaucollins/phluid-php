@@ -2,8 +2,6 @@
 namespace Phluid;
 
 require_once 'tests/helper.php';
-use Phluid\Http\Request;
-use Phluid\Tests\ConnectionStub;
 
 class AppTest extends \PHPUnit_Framework_TestCase {
   
@@ -14,7 +12,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
     $this->app->get( '/', function( $request, $response, $next ){
       $response->renderString('Hello World');
     } );
-    $this->http = new ServerStub();
+    $this->http = new Test\Server();
     $this->app->createServer( $this->http );
   }
   
@@ -112,10 +110,10 @@ class AppTest extends \PHPUnit_Framework_TestCase {
   private function doRequest( $method = 'GET', $path = '/', $headers = array(), $auto_close = true ){
     
     $request_headers = new \Phluid\Http\Headers( $method, $path, 'HTTP', '1.1', $headers );
-    $this->request = $request = new RequestStub( $request_headers );
+    $this->request = $request = new Test\Request( $request_headers );
     $request->method = $method;
     $request->path = $path;
-    $response = new ResponseStub( $request );
+    $response = new Test\Response( $request );
     $this->http->emit( 'request', array( $request, $response ) );
     if ( $auto_close ) $request->send();
     return $response;
@@ -172,77 +170,3 @@ class Lol {
   
 }
 
-class ServerStub extends \Evenement\EventEmitter implements \React\Http\ServerInterface {
-  
-}
-
-class RequestStub extends \Phluid\Http\Request {
-    
-  function __construct( $headers ){
-    parent::__construct( new ConnectionStub() );
-    $this->headers = $headers;
-    $this->emit( 'headers', array( $headers ) );
-  }
-  
-  public function send( $body = null ){
-    
-    if ( $body != null ) {
-      while( strlen( $body ) > 0 ){
-        $part = substr( $body, 0, 1024 );
-        $body = substr( $body, 1024 );
-        $this->emit( 'data', array( $part ) );
-      }
-    }
-    $this->close();
-    
-  }
-  
-  public function isReadable(){
-    return $this->readable;
-  }
-  
-  public function pause(){
-    $this->emit( 'pause' );
-  }
-  
-  public function resume(){
-    $this->emit( 'resume' );
-  }
-  
-  public function close(){
-    $this->readable = false;
-    $this->emit( 'end' );
-    $this->removeAllListeners();
-  }
-  
-  public function pipe( \React\Stream\WritableStreamInterface $dest, array $options = array() ){
-    \React\Util::pipe( $this, $dest, $options );
-    return $dest;
-  }
-  
-}
-
-class ResponseStub extends \Phluid\Http\Response {
-  
-  protected $body = "";
-  
-  function __construct( $request ){
-    $conn = new ConnectionStub();
-    parent::__construct( $conn, $request );
-  }
-  
-  public function writeHead( $status = 200, $headers = array() ){
-    parent::writeHead( $status, $headers );
-    $this->captureBody = true;
-  }
-  
-  function write( $data ){
-    $this->body .= $data;
-    parent::write( $data );
-  }
-  
-  function getBody(){
-    return $this->body;
-  }
-    
-}
