@@ -7,8 +7,9 @@ use React\Http\ServerInterface as HttpServerInterface;
 use React\Socket\Server as SocketServer;
 use Phluid\Middleware\Cascade;
 use React\EventLoop\Factory as LoopFactory;
+use Evenement\EventEmitter;
 
-class App {
+class App extends EventEmitter {
   
   private $router;
   private $middleware = array();
@@ -93,9 +94,14 @@ class App {
     
     if ( $this->router_mounted === false ) $this->inject( $this->router );
     
+    $this->emit( 'start', array( $request, $response) );
+    
     $middlewares = $this->middleware;
     $cascade = new Cascade( $middlewares );
-    $cascade( $request, $response, $next );
+    $cascade( $request, $response, function( $request, $response, $next ){
+      $this->emit( 'end', array( $request, $response ) );
+      $next();
+    } );
     
   }
   
@@ -136,7 +142,7 @@ class App {
    * @return App
    * @author Beau Collins
    */
-  public function on( $method, $path, $filters, $action = null ){
+  public function handle( $method, $path, $filters, $action = null ){
     return $this->route( new RequestMatcher( $method, $path ), $filters, $action );
   }
   
@@ -165,7 +171,7 @@ class App {
    * @author Beau Collins
    */
   public function get( $path, $filters, $action = null ){
-    return $this->on( 'GET', $path, $filters, $action );
+    return $this->handle( 'GET', $path, $filters, $action );
   }
   
   /**
@@ -179,7 +185,7 @@ class App {
    * @author Beau Collins
    */
   public function post( $path, $filters, $action = null ){
-    return $this->on( 'POST', $path, $filters, $action );
+    return $this->handle( 'POST', $path, $filters, $action );
   }
     
 }

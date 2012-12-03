@@ -2,7 +2,7 @@
 
 namespace Phluid;
 
-class Response {
+class ResponseDeprecated {
 
   private $raw_body;
   private $status_code = 200;

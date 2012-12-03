@@ -79,6 +79,14 @@ class Request extends EventEmitter implements ReadableStreamInterface {
     $method = $this->getMethod();
     return $method != 'GET' && $method != 'HEAD';
   }
+  
+  public function param( $param ){
+    if ( $this->params && array_key_exists( $param, $this->params ) ) {
+      return $this->params[ $param ];
+    } else if( $this->query && array_key_exists( $param, $this->query ) ){
+      return $this->query[ $param ];
+    }
+  }
     
   public function getHeaders(){
     return $this->headers;

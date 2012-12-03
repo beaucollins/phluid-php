@@ -28,70 +28,62 @@ class AppTest extends \PHPUnit_Framework_TestCase {
   }
   
   public function testAppRoute(){
+        
+    $response = $this->doRequest();
     
-    $connection = new ConnectionStub();
-    $request = new Request( $connection );
-    
-    // $this->assertSame( 'Hello World', $response->getBody() );
-    
+    $this->assertSame( 'Hello World', $response->getBody() );
   }
   
   public function testFullRequest(){
     
-    $connection = new ConnectionStub();
     $this->app->view_path = realpath('.') . '/tests/Views';
-    $response = $this->app
-      ->get( '/users/:username' , function( $request, $response ){
-        $response->render( 'profile', array( "username" => $request->param( 'username' ) ) );
-      } );
+    $this->app->get( '/users/:username' , function( $request, $response ){
+      $response->render( 'profile', array( "username" => $request->param( 'username' ) ) );
+    } );
     
-    // $this->assertSame( 'Hello beau', $response->getBody() );
+    $response = $this->doRequest( 'GET', '/users/beau' );
+    
+    $this->assertSame( 'Hello beau', $response->getBody() );
       
   }
   
   public function testRouteActionAsObject(){
     
     $this->app->get( '/awesome', new HelloWorldAction );
-    $connection = new ConnectionStub();
-    $request = new Http\Request( $connection );
+    $response = $this->doRequest( 'GET', '/awesome' );
     
-    // $this->assertSame( 'Hello World!', $response->getBody() );
+    $this->assertSame( 'Hello World!', $response->getBody() );
     
   }
   
   public function testMiddleware(){
     
     $this->app->inject( new Lol() );
+    $response = $this->doRequest();
+    $this->assertSame( 'LOL', $response->getBody() );
     
-    $connection = new ConnectionStub();
-    $request = new Request( $connection );
-        
-    // $this->assertSame( 'LOL', $response->getBody() );
-    
-    // $response = $this->app->serve( $request );
-    // $this->assertSame( 'Hello World', $response->getBody() );
+    $response = $this->doRequest();
+    $this->assertSame( 'Hello World', $response->getBody() );
     
   }
   
   public function testNoMatchingResponse(){
     
-    $connection = new ConnectionStub();
-    $request = new Request( $connection );
+    $caught = false;
     try {
-      $response = $this->app->serve( $request );
+      $response = $this->doRequest( 'GET', '/doesnt-exist' );
     } catch( Exception $e ){
+      $caught = true;
       $this->assertSame( 'No route matching GET /doesnt-exist', $e->getMessage() );
     }
+    $this->assertTrue( $caught, "No exception was raised." );
     
   }
   
   public function testExceptionHandler(){
-    $app = new App();
-    $handler = new HandleException();
-    $app->inject( $handler );
-    $connection = new ConnectionStub();
-    $request = new Request( $connection );
-    $response = $app->serve( $request );
+    
+    $this->app->inject( new HandleException() );
+    $response = $this->doRequest( 'GET', 'doesnt-exists' );
         
     $this->assertSame( 'Uh, Oh', $response->getBody() );
     
@@ -100,16 +92,37 @@ class AppTest extends \PHPUnit_Framework_TestCase {
   public function testPostRequest(){
     
     $this->app->post( '/robot', function( $request, $response ){
-      $response->renderString( strlen( $request->getBody() ) );
+      $body = "";
+      $request->on( 'data', function( $data ) use ( &$body ){
+        $body .= $data;
+      });
+      $request->on( 'end', function() use ( &$body, $response ) {
+        $response->renderString( strlen( $body ) );
+      });
     } );
     
-    $connection = new ConnectionStub();
-    $request = new Request( $connection );
-     
-    $response = $this->app->serve( $request );
+    $response = $this->doRequest( 'POST', '/robot', array(), false );
+    $response->on( 'end', function() use( $response ){
+      $this->assertSame( '18', $response->getBody() );
+    });
     
-    $this->assertSame( '18', $response->getBody() );
+    $this->send( '?something=awesome' );
+  }
+  
+  private function doRequest( $method = 'GET', $path = '/', $headers = array(), $auto_close = true ){
     
+    $request_headers = new \Phluid\Http\Headers( $method, $path, 'HTTP', '1.1', $headers );
+    $this->request = $request = new RequestStub( $request_headers );
+    $request->method = $method;
+    $request->path = $path;
+    $response = new ResponseStub( $request );
+    $this->http->emit( 'request', array( $request, $response ) );
+    if ( $auto_close ) $request->send();
+    return $response;
+  }
+  
+  private function send( $data ){
+    $this->request->send( $data );
   }
   
 }
@@ -161,4 +174,75 @@ class Lol {
 
 class ServerStub extends \Evenement\EventEmitter implements \React\Http\ServerInterface {
   
+}
+
+class RequestStub extends \Phluid\Http\Request {
+    
+  function __construct( $headers ){
+    parent::__construct( new ConnectionStub() );
+    $this->headers = $headers;
+    $this->emit( 'headers', array( $headers ) );
+  }
+  
+  public function send( $body = null ){
+    
+    if ( $body != null ) {
+      while( strlen( $body ) > 0 ){
+        $part = substr( $body, 0, 1024 );
+        $body = substr( $body, 1024 );
+        $this->emit( 'data', array( $part ) );
+      }
+    }
+    $this->close();
+    
+  }
+  
+  public function isReadable(){
+    return $this->readable;
+  }
+  
+  public function pause(){
+    $this->emit( 'pause' );
+  }
+  
+  public function resume(){
+    $this->emit( 'resume' );
+  }
+  
+  public function close(){
+    $this->readable = false;
+    $this->emit( 'end' );
+    $this->removeAllListeners();
+  }
+  
+  public function pipe( \React\Stream\WritableStreamInterface $dest, array $options = array() ){
+    \React\Util::pipe( $this, $dest, $options );
+    return $dest;
+  }
+  
+}
+
+class ResponseStub extends \Phluid\Http\Response {
+  
+  protected $body = "";
+  
+  function __construct( $request ){
+    $conn = new ConnectionStub();
+    parent::__construct( $conn, $request );
+  }
+  
+  public function writeHead( $status = 200, $headers = array() ){
+    parent::writeHead( $status, $headers );
+    $this->captureBody = true;
+  }
+  
+  function write( $data ){
+    $this->body .= $data;
+    parent::write( $data );
+  }
+  
+  function getBody(){
+    return $this->body;
+  }
+    
 }

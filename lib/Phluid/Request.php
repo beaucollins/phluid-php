@@ -2,7 +2,7 @@
 
 namespace Phluid;
 
-class Request {
+class RequestDeprecated {
  
   var $method;
   var $path;
