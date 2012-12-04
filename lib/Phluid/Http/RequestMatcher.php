@@ -1,6 +1,6 @@
 <?php
 
-namespace Phluid;
+namespace Phluid\Http;
 
 class RequestMatcher {
   

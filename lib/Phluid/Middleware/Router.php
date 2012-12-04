@@ -1,6 +1,8 @@
 <?php
-namespace Phluid;
-use Phluid\Middleware\Cascade;
+namespace Phluid\Middleware;
+
+use Phluid\Exception\NotFound;
+
 class Router {
   
   private $routes = array();
@@ -10,7 +12,7 @@ class Router {
     $routes = $this->routes;
     $cascade = new Cascade( $routes );
     $cascade( $req, $res, function() use ($req){
-      throw new Exception\NotFound( "No route matching {$req}" );
+      throw new NotFound( "No route matching {$req}" );
     });
     
   }

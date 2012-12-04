@@ -57,6 +57,8 @@ class BodyParserTest extends \Phluid\Test\TestCase {
       $this->assertArrayHasKey( 'file', $request->body );
       
       $this->assertFileExists( (string) $request->body['file'] );
+      $next();
+      
     } );
     
     $response = $this->doRequest( 'POST', '/', array(
@@ -113,6 +115,8 @@ class BodyParserTest extends \Phluid\Test\TestCase {
   
   function setUp(){
     parent::setUp();
-    $this->app->post( '/', function(){} );
+    $this->app->post( '/', function( $request, $response ){
+      $response->renderText( "done" );
+    } );
   }
 }

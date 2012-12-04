@@ -1,8 +1,6 @@
 <?php
 
-namespace Phluid;
-
-use Phluid\Middleware\Cascade;
+namespace Phluid\Middleware;
 
 class Route {
   

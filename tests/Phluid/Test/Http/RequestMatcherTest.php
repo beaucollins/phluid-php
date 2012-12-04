@@ -1,7 +1,7 @@
 <?php
 
 namespace Phluid\Test;
-use Phluid\RequestMatcher;
+use Phluid\Http\RequestMatcher;
 use Phluid\Http\Headers;
 
 class RequestMatcherTest extends TestCase {

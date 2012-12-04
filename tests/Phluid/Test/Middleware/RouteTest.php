@@ -1,9 +1,8 @@
 <?php
 
-namespace Phluid\Test;
-use Phluid\App;
-
-require_once 'tests/helper.php';
+namespace Phluid\Middleware\Test;
+use Phluid\Route;
+use Phluid\Test\TestCase;
 
 class RouteTest extends TestCase {
   

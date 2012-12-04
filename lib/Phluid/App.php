@@ -3,6 +3,7 @@
 namespace Phluid;
 
 use Phluid\Http\Server;
+use Phluid\Middleware\Router;
 use React\Http\ServerInterface as HttpServerInterface;
 use React\Socket\Server as SocketServer;
 use Phluid\Middleware\Cascade;
@@ -143,7 +144,7 @@ class App extends EventEmitter {
    * @author Beau Collins
    */
   public function handle( $method, $path, $filters, $action = null ){
-    return $this->route( new RequestMatcher( $method, $path ), $filters, $action );
+    return $this->route( new Http\RequestMatcher( $method, $path ), $filters, $action );
   }
   
   /**

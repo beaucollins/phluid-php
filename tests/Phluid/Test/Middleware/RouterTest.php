@@ -1,7 +1,8 @@
 <?php
-namespace Phluid\Test;
-use \Phluid\Router;
-use \Phluid\RequestMatcher;
+namespace Phluid\Test\Middleware;
+use Phluid\Middleware\Router;
+use Phluid\Http\RequestMatcher;
+use Phluid\Test\TestCase;
 
 class RouterTest extends TestCase {
   
