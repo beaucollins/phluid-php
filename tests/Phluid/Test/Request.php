@@ -23,27 +23,13 @@ class Request extends \Phluid\Http\Request {
     
   }
   
-  public function isReadable(){
-    return $this->readable;
-  }
-  
-  public function pause(){
-    $this->emit( 'pause' );
-  }
-  
-  public function resume(){
-    $this->emit( 'resume' );
-  }
-  
-  public function close(){
-    $this->readable = false;
-    $this->emit( 'end' );
-    $this->removeAllListeners();
-  }
-  
-  public function pipe( \React\Stream\WritableStreamInterface $dest, array $options = array() ){
-    \React\Util::pipe( $this, $dest, $options );
-    return $dest;
+  public function sendFile( $file ){
+    $handle = fopen( $file, 'r' );
+    while( $string = fread( $handle, 1024 ) ){
+      $this->emit( 'data', array( $string ) );
+    }
+    fclose( $handle );
+    $this->close();
   }
   
 }

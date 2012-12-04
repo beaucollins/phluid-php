@@ -12,7 +12,7 @@ class FormBodyParser {
       } );
       
       $request->on( 'end', function() use ( &$body, $request, $next ){
-        \parse_str( $body, $query );
+        parse_str( $body, $query );
         $request->body = $query;
         $request->hello = "World";
         $next();

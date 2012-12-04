@@ -10,7 +10,7 @@ use Evenement\EventEmitter;
 class Request extends EventEmitter implements ReadableStreamInterface {
   
   private $conn;
-  private $headers;
+  protected $headers;
   private $memo;
   
   public $path;

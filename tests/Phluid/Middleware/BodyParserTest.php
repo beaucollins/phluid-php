@@ -2,7 +2,8 @@
 
 namespace Phluid\Middleware;
 
-use Phluid\Request;
+use Phluid\Test\Request;
+use Phluid\App;
 
 require_once 'tests/helper.php';
 
@@ -13,81 +14,123 @@ class BodyParserTest extends \PHPUnit_Framework_TestCase {
     $thing = new \stdClass();
     $thing->awesome = "YES";
     
-    $request = new Request( 'POST', '/', array(), array( 'Content-Type' => 'application/json' ), json_encode( $thing ) );
-    
-    $this->assertSame( json_encode( $thing ), $request->getBody() );
-    
     $parser = new JsonBodyParser( false );
+    $this->app->inject( $parser );
     
-    $next = function() use( $request, $thing ) {
-      $this->assertSame( $thing->awesome, $request->getBody()->awesome );
-    };
-    $parser( $request, null, $next );
+    $body = json_encode( $thing );
+    $response = $this->doRequest( 'POST', '/', array(
+      'Content-Type' => 'application/json',
+      'Content-Length' => strlen( $body )
+    ), false );
+    $this->send( $body );
+        
+    
+    $this->assertSame( $thing->awesome, $this->request->body->awesome );
     
   }
   
   public function testFormParsing(){
     
     $parser = new FormBodyParser();
-    $body = array( 'field' => 'value' );
-    $request = new Request( 'POST', '/', array(), array( 'Content-Type' => 'application/x-www-form-urlencoded' ), http_build_query( $body ) );
-    $parser( $request, null, function() use($request, $body){
-        
-      $this->assertSame( $body, $request->getBody() );
-        
-    } );
+    $values = array( 'field' => 'value' );
+    $body = http_build_query( $values );
+    $this->app->inject( $parser );
+    
+    $this->doRequest( 'POST', '/', array(
+      'Content-Type' => 'application/x-www-form-urlencoded',
+      'Content-Length' => strlen( $body )
+    ), false );
+    
+    $this->send( $body );
+    $this->assertSame( $values, $this->request->body );
+    
   }
   
   public function testMultipartParsing(){
     
-    $request = new Request( 'POST', '/', array(), array(
-      'Content-Type' => 'multipart/form-data; boundary=----WebKitFormBoundaryoOeNyQKwEVuvehNw'      
-    ), file_get_contents( realpath('.') . '/tests/files/multipart-body' ) );
-    
     $parser = new MultipartBodyParser( realpath( '.' ) . '/tests/uploads' );
-    $parser( $request, null, function() use( $request ){
+    $this->app->inject( $parser );
+    $this->app->inject( function( $request, $response, $next ){
+
+      $this->assertArrayHasKey( 'name', $request->body );
+      $this->assertArrayHasKey( 'file', $request->body );
       
-      $this->assertArrayHasKey( 'name', $request->getBody() );
-      $this->assertArrayHasKey( 'file', $request->getBody() );
-      
-      $this->assertFileExists( (string) $request->param('file') );
-      
-    });
+      $this->assertFileExists( (string) $request->body['file'] );
+    } );
     
+    $response = $this->doRequest( 'POST', '/', array(
+      'Content-Type' => 'multipart/form-data; boundary=----WebKitFormBoundaryoOeNyQKwEVuvehNw'
+    ), false);
+    $this->sendFile( realpath('.') . '/tests/files/multipart-body' );
   }
   
   public function testMultipartAssocParsing(){
     
-    $request = new Request( 'POST', '/', array(), array(
-      'Content-Type' => 'multipart/form-data; boundary=----WebKitFormBoundaryAYD2hRdSJxpcdK2a'
-    ), file_get_contents( realpath('.') . '/tests/files/multipart-assoc' ) );
-    
     $parser = new MultipartBodyParser( realpath( '.' ) . '/tests/uploads' );
-    $parser( $request, null, function() use( $request ){
+    $this->app->inject( $parser );
+    $this->app->inject( function( $request, $response, $next ){
       
-      $body = $request->getBody();
+      $body = $request->body;
       $this->assertArrayHasKey( 'first', $body['name'] );
       $this->assertArrayHasKey( 'last', $body['name'] );
-      
-      $this->assertSame( 'Sammy', (string) $body['name']['first'] );
+
+      $this->assertSame( "Sammy", (string) $body['name']['first'] );
       $this->assertSame( 'Collins', (string) $body['name']['last'] );
-      
+    
       $this->assertArrayHasKey( 0, $body['file']['for'] );
       $this->assertArrayHasKey( 1, $body['file']['for'] );
       
       $this->assertFileExists( (string) $body['file']['for'][0] );
       $this->assertFileExists( (string) $body['file']['for'][1] );
-      
+      $next();
     });
+    
+    $response = $this->doRequest( 'POST', '/', array(
+      'Content-Type' => 'multipart/form-data; boundary=----WebKitFormBoundaryAYD2hRdSJxpcdK2a'
+    ), false );
+    
+    $this->sendFile( realpath('.') . '/tests/files/multipart-assoc' );
     
   }
   
   public function testMultipartSkipsParsing(){
-    $request = new Request( 'POST', '/', array(), array( 'Content-Type' => 'text/plain'), "Hello" );
     $parser = new MultipartBodyParser( realpath( '.' ) . '/tests/uploads' );
-    $parser( $request, null, function() use($request){
-      $this->assertSame( "Hello", $request->getBody() );
-    });
+    $this->app->inject( $parser );
+    
+    $response = $this->doRequest( 'POST', '/', array( 'Content-Type' => 'text/plain'), false );
+    $this->send( "Hello" );
+    $this->assertNull( $this->request->body );
+  }
+  
+  private function doRequest( $method = 'GET', $path = '/', $headers = array(), $auto_close = true ){
+    
+    $request_headers = new \Phluid\Http\Headers( $method, $path, 'HTTP', '1.1', $headers );
+    $this->request = $request = new \Phluid\Test\Request( $request_headers );
+    $request->method = $method;
+    $request->path = $path;
+    $response = new \Phluid\Test\Response( $request );
+    $this->http->emit( 'request', array( $request, $response ) );
+    if ( $auto_close ) $request->send();
+    return $response;
+  }
+  
+  private function send( $data ){
+    $this->request->send( $data );
+  }
+  
+  private function sendFile( $file ){
+    $this->request->sendFile( $file );
+  }
+  
+  function setUp(){
+    
+    $this->app = new App();
+    $this->app->post( '/', function( $request, $response, $next ){
+      $response->renderString('Hello World');
+    } );
+    $this->http = new \Phluid\Test\Server();
+    $this->app->createServer( $this->http );
+    
   }
   
 }

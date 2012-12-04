@@ -6,7 +6,7 @@ require_once 'tests/helper.php';
 class AppTest extends \PHPUnit_Framework_TestCase {
   
   
-  public function setUp(){
+  function setUp(){
     
     $this->app = new App();
     $this->app->get( '/', function( $request, $response, $next ){

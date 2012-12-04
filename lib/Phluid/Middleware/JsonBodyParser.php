@@ -22,7 +22,7 @@ class JsonBodyParser {
         $body .= $data;
       } );
       $request->on( 'end', function() use ( &$body, $request, $next ){
-        $request->body = json_decode( $request->getBody(), $this->array );
+        $request->body = json_decode( $body, $this->array, $this->depth, $this->json_decode_options );
         $next();
       } );
     } else {

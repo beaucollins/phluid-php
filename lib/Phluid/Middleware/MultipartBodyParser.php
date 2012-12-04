@@ -84,12 +84,10 @@ class MultipartStreamParser extends EventEmitter implements WritableStreamInterf
   
   private function parse(){
     if ( $this->currentPart ) {
-      // if we find the boundary, end it
       if ( !$this->buffer->containsString( $this->boundary ) ) {
         $this->currentPart->write( $this->buffer->readAll() );
       } else {
-        // echo "Found the boundary " . $position .  PHP_EOL;
-        $this->currentPart->end( $this->buffer->readTo( $this->boundary ) );
+        $this->currentPart->end( $this->buffer->readTo( "\r\n" . $this->boundary ) );
         $this->currentPart = null;
         $this->parse();
       }
@@ -120,6 +118,9 @@ class MultipartStreamParser extends EventEmitter implements WritableStreamInterf
     if ( $pos = strpos( $path, "[", 1 ) ) {
       $key = trim( substr( $path, 0, $pos ), "[]" );
       $path = substr( $path, $pos );
+      if ( !array_key_exists( $key, $container ) ) {
+        $container[$key] = array();
+      }
       self::addPartAtQueryPath( $path, $object,  $container[$key] );
     } else {
       $key = trim( $path, "[]" );
@@ -144,6 +145,10 @@ class MultipartStreamParser extends EventEmitter implements WritableStreamInterf
     if ( is_string( $data ) ) {
       $this->write( $data );
     }
+    if ( $this->currentPart ) {
+      $this->currentPart->end();
+    }
+    
     $this->close();
   }
   
