@@ -1,53 +1,52 @@
 <?php
 
-namespace Phluid;
+namespace Phluid\Test;
+use Phluid\App;
 
 require_once 'tests/helper.php';
 
-class RouteTest extends \PHPUnit_Framework_TestCase {
+class RouteTest extends TestCase {
   
   public function getIndex( $request, $response ){
     $response->renderText( 'hello world' );
   }
   
   public function testInvokingRoute(){
-    $app = new App();
-    $app->get( '/show/:person', function( $request, $response ){
+    $this->app->get( '/show/:person', function( $request, $response ){
       $response->renderText( $request->param('person') );
     });
-    $response = $app->serve( new Request( 'GET', '/show/beau' ) );    
+    $response = $this->doRequest( 'GET', '/show/beau' );
     $this->assertSame( 'beau', $response->getBody() );
     
   }
   
   public function testRouteWithArrayCallback(){
-    $app = new App();
-    $app->get( '/', array( $this, 'getIndex' ) );
-    $response = $app->serve( new Request( 'GET', '/' ) );
+    $this->app->get( '/hello', array( $this, 'getIndex' ) );
+    $response = $this->doRequest( 'GET', '/hello' );
     $this->assertSame( 'hello world', $response->getBody() );
   }
   
   public function testInvokigRouteWithFilters(){
-    $app = new App();
     $reverse = function( $request, $response, $next ){
+      $params = $request->params;
+      $params['person'] = strrev( $params['person'] );
+      $request->params = $params;
       $next();
-      $response->setBody( strrev( $response->getBody() ) );
     };
-    $app->get( '/show/:person', $reverse, function( $request, $response ){
+    $this->app->get( '/show/:person', $reverse, function( $request, $response ){
       $response->renderText( $request->param('person') );
     });
-    $response = $app->serve( new Request( 'GET', '/show/beau' ) );    
+    $response = $this->doRequest( 'GET', '/show/beau' );
     $this->assertSame( strrev('beau'), $response->getBody() );
   }
   
   public function testInvokingRouteWithRedirectFilter(){
-    $app = new App();
     $redirect = function( $request, $response, $next ){
-      $response->redirect('/somewhere');
+      $response->redirectTo('/somewhere');
     };
-    $app->get( '/', $redirect, function( $request, $response ){
+    $this->app->get( '/redirect', $redirect, function( $request, $response ){
     });
-    $response = $app->serve( new Request( 'GET', '/' ) );
+    $response = $this->doRequest( 'GET', '/redirect' );
     $this->assertSame( '/somewhere', $response->getHeader('location') );
     
   }

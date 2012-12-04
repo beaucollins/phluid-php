@@ -1,24 +1,22 @@
 <?php
-namespace Phluid\Middleware;
+namespace Phluid\Test\Middleware;
+use Phluid\Middleware\StaticFiles;
+use Phluid\Test\TestCase;
 
-class StaticFileTest extends \PHPUnit_Framework_TestCase {
+class StaticFileTest extends TestCase {
   
   function setUp(){
     
     $this->file_path = realpath('.') . '/tests/files';
-    
+    parent::setUp();
   }
   
   function testServeFile(){
     
     $static_files = new StaticFiles( $this->file_path );
+    $this->app->inject( $static_files );
     
-    $request = new \Phluid\Request( 'GET', '/hello_world.txt' );
-    $response = new \Phluid\Response( $request );
-    
-    $static_files( $request, $response, function() {
-      $this->fail( "Didn't find a file" );
-    } );
+    $response = $this->doRequest( 'GET', '/hello_world.txt' );
         
     $this->assertSame( 200, $response->getStatus() );
     $this->assertSame( 'Hello world', $response->getBody() );
@@ -31,14 +29,10 @@ class StaticFileTest extends \PHPUnit_Framework_TestCase {
   function testServeImage(){
     
     $static_files = new StaticFiles( $this->file_path );
+    $this->app->inject( $static_files );
     
-    $request = new \Phluid\Request( 'GET', '/200.jpg' );
-    $response = new \Phluid\Response( $request );
+    $response = $this->doRequest( 'GET', '/200.jpg' );
     
-    $static_files( $request, $response, function() use ( $request ) {
-      $this->fail( "Didn't find a file for: $request" );
-    } );
-        
     $this->assertSame( 200, $response->getStatus() );
     $this->assertArrayHasKey( 'CONTENT-TYPE', $response->getHeaders() );
     $this->assertSame( $response->getHeader( 'Content-Type'), 'image/jpeg' );
@@ -48,14 +42,10 @@ class StaticFileTest extends \PHPUnit_Framework_TestCase {
   function testServeCss(){
     
     $static_files = new StaticFiles( $this->file_path );
+    $this->app->inject( $static_files );
     
-    $request = new \Phluid\Request( 'GET', '/style.css' );
-    $response = new \Phluid\Response( $request );
+    $response = $this->doRequest( 'GET', '/style.css' );
     
-    $static_files( $request, $response, function() use ( $request ) {
-      $this->fail( "Didn't find a file for: $request" );
-    } );
-        
     $this->assertSame( 200, $response->getStatus() );
     $this->assertArrayHasKey( 'CONTENT-TYPE', $response->getHeaders() );
     $this->assertSame( $response->getHeader( 'Content-Type'), 'text/css' );

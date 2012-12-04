@@ -1,20 +1,7 @@
 <?php
-namespace Phluid;
+namespace Phluid\Test;
 
-require_once 'tests/helper.php';
-
-class AppTest extends \PHPUnit_Framework_TestCase {
-  
-  
-  function setUp(){
-    
-    $this->app = new App();
-    $this->app->get( '/', function( $request, $response, $next ){
-      $response->renderString('Hello World');
-    } );
-    $this->http = new Test\Server();
-    $this->app->createServer( $this->http );
-  }
+class AppTest extends TestCase {
   
   public function testSettings(){
     
@@ -70,7 +57,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
     $caught = false;
     try {
       $response = $this->doRequest( 'GET', '/doesnt-exist' );
-    } catch( Exception $e ){
+    } catch( \Exception $e ){
       $caught = true;
       $this->assertSame( 'No route matching GET /doesnt-exist', $e->getMessage() );
     }
@@ -81,7 +68,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
   public function testExceptionHandler(){
     
     $this->app->inject( new HandleException() );
-    $response = $this->doRequest( 'GET', 'doesnt-exists' );
+    $response = $this->doRequest( 'GET', '/doesnt-exists' );
         
     $this->assertSame( 'Uh, Oh', $response->getBody() );
     
@@ -107,17 +94,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
     $this->send( '?something=awesome' );
   }
   
-  private function doRequest( $method = 'GET', $path = '/', $headers = array(), $auto_close = true ){
-    
-    $request_headers = new \Phluid\Http\Headers( $method, $path, 'HTTP', '1.1', $headers );
-    $this->request = $request = new Test\Request( $request_headers );
-    $request->method = $method;
-    $request->path = $path;
-    $response = new Test\Response( $request );
-    $this->http->emit( 'request', array( $request, $response ) );
-    if ( $auto_close ) $request->send();
-    return $response;
-  }
+
   
   private function send( $data ){
     $this->request->send( $data );
@@ -140,7 +117,7 @@ class HandleException {
   public function __invoke( $request, $response, $next ){
     try {
       $next();
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $response->renderString( 'Uh, Oh', 'text/plain', $e->getCode() );
     }
   }

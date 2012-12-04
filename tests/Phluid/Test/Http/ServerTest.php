@@ -1,13 +1,12 @@
 <?php
-namespace Phluid\Http;
-
-require_once 'tests/helper.php';
+namespace Phluid\Test\Http;
+use Phluid\Http\Server;
 
 class ServerTest extends \PHPUnit_Framework_TestCase {
   
   function testRequest(){
       
-    $server = new Server( $this->socket );
+    $server = new \Phluid\Http\Server( $this->socket );
     
     $server->on( 'request', function( $request, $response ){
       

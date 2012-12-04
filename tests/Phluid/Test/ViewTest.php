@@ -30,7 +30,6 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
   }
   
   public function testLayout(){
-      
     $view = new View( 'hello', 'layout', $this->view_path );
     
     $this->assertNotNull( $view->getLayout() );

@@ -1,40 +1,48 @@
 <?php
 
-namespace Phluid;
+namespace Phluid\Test;
+use Phluid\RequestMatcher;
+use Phluid\Http\Headers;
 
-require_once 'tests/helper.php';
-
-class RequestMatcherTest extends \PHPUnit_Framework_TestCase {
+class RequestMatcherTest extends TestCase {
   
   public function testRegexCompiling(){
     $this->assertSame( "#^/user(/(?<name>[^/]+))?/?$#", RequestMatcher::compileRegex( '/user/:name?' ) );
   }
-  
+         
   public function testPathVariables(){
     $matcher = new RequestMatcher( 'GET', '/show/:person' );
-    $request = new Request( 'GET', '/show/beau' );
+    $request = $this->makeRequest( 'GET', '/show/beau' );
     $this->assertArrayHasKey( 'person', $matcher( $request ), "Route should match path" );
   }
   
   public function testSlashDelimiter(){
     $matcher = new RequestMatcher( 'GET', '/show/:person' );
-    $request = new Request( 'GET', '/show/beau/something' );
+    $request = $this->makeRequest( 'GET', '/show/beau/something' );
     $this->assertFalse( $matcher( $request ), "Route shouldn't match" );
   }
   
   public function testSplatRoutes(){
     $matcher = new RequestMatcher( 'GET', '/user/*' );
-    $request = new Request( 'GET', '/user/beau' );
+    $request = $this->makeRequest( 'GET', '/user/beau' );
     $this->assertArrayHasKey( 0, $matcher( $request ) );
   }
   
   public function testParamRoute(){
-    $request = new Request( 'GET', '/user/' );
+    $request = $this->makeRequest( 'GET', '/user/' );
     $matcher = new RequestMatcher( 'GET', '/user/:name?' );
     $this->assertArrayHasKey( 0, $matcher( $request ) );
-    $matches = $matcher->matches( new Request( 'GET', '/user/beau/' ) );
+    $matches = $matcher->matches( $this->makeRequest( 'GET', '/user/beau/' ) );
     $this->assertArrayHasKey( 'name', $matches  );
     $this->assertSame( 'beau', $matches['name'] );
+  }
+  
+  function makeRequest( $method, $path ){
+    $headers = new Headers( $method, $path );
+    $request = new Request( $headers );
+    $request->method = $method;
+    $request->path = $path;
+    return $request;
   }
   
 }

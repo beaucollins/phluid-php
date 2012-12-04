@@ -17,8 +17,8 @@ class Response extends \Phluid\Http\Response {
   }
   
   function write( $data ){
-    $this->body .= $data;
-    parent::write( $data );
+    if( $this->captureBody ) $this->body .= $data;
+    return parent::write( $data );
   }
   
   function getBody(){

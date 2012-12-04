@@ -74,6 +74,10 @@ class Response extends EventEmitter implements WritableStreamInterface {
     }
   }
   
+  public function getStatus(){
+    return $this->status;
+  }
+  
   /**
    * Set an HTTP response header
    *
@@ -167,7 +171,7 @@ class Response extends EventEmitter implements WritableStreamInterface {
         while( $string = fread( $handle, $this->conn->bufferSize ) ){
           if ( feof( $handle ) ) {
             fclose( $handle );
-            $this->end();
+            $this->end( $string );
             return;
           } else {
             if( !$this->write( $string ) ) return;

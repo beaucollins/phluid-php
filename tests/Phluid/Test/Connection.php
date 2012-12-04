@@ -9,6 +9,7 @@ class Connection extends EventEmitter implements ConnectionInterface {
   private $data = '';
   private $readable = true;
   private $writable = true;
+  public $bufferSize = 1024;
     
   public function streamFile( $file ){
     $resource = fopen( $file, 'r' );      

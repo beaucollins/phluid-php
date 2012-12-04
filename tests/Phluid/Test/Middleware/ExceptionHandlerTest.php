@@ -4,22 +4,18 @@ namespace Phluid\Middleware;
 use Phluid\Request;
 use Phluid\App;
 
-require_once 'tests/helper.php';
-
-class ExceptionHandlerTest extends \PHPUnit_Framework_TestCase {
+class ExceptionHandlerTest extends \Phluid\Test\TestCase {
   
   function testRenderTemplate(){
     
     $handler = new ExceptionHandler();
     
-    $app = new App( array( 'view_path' => __DIR__ ) );
-    
-    $app->get( '/', $handler, function( $request, $response ){
+    $this->app->get( '/gone', $handler, function( $request, $response ){
+      // this template does not exist
       $response->render( 'lol' );
     });
     
-    $response = $app->serve( new Request( 'GET', '/' ) );          
-    
+    $response = $this->doRequest( 'GET', '/gone' );
     $this->assertTag( array( 'tag' => 'title', 'content' => 'Application Error:' ), $response->getBody() );
     
   }

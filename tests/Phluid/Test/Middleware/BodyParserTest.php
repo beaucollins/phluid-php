@@ -1,13 +1,14 @@
 <?php
 
-namespace Phluid\Middleware;
+namespace Phluid\Test\Middleware;
 
-use Phluid\Test\Request;
-use Phluid\App;
+use Phluid\Middleware\JsonBodyParser;
+use Phluid\Middleware\MultipartBodyParser;
+use Phluid\Middleware\FormBodyParser;
 
 require_once 'tests/helper.php';
 
-class BodyParserTest extends \PHPUnit_Framework_TestCase {
+class BodyParserTest extends \Phluid\Test\TestCase {
   
   public function testJsonParsing(){
     
@@ -101,19 +102,7 @@ class BodyParserTest extends \PHPUnit_Framework_TestCase {
     $this->send( "Hello" );
     $this->assertNull( $this->request->body );
   }
-  
-  private function doRequest( $method = 'GET', $path = '/', $headers = array(), $auto_close = true ){
     
-    $request_headers = new \Phluid\Http\Headers( $method, $path, 'HTTP', '1.1', $headers );
-    $this->request = $request = new \Phluid\Test\Request( $request_headers );
-    $request->method = $method;
-    $request->path = $path;
-    $response = new \Phluid\Test\Response( $request );
-    $this->http->emit( 'request', array( $request, $response ) );
-    if ( $auto_close ) $request->send();
-    return $response;
-  }
-  
   private function send( $data ){
     $this->request->send( $data );
   }
@@ -123,14 +112,7 @@ class BodyParserTest extends \PHPUnit_Framework_TestCase {
   }
   
   function setUp(){
-    
-    $this->app = new App();
-    $this->app->post( '/', function( $request, $response, $next ){
-      $response->renderString('Hello World');
-    } );
-    $this->http = new \Phluid\Test\Server();
-    $this->app->createServer( $this->http );
-    
+    parent::setUp();
+    $this->app->post( '/', function(){} );
   }
-  
 }
