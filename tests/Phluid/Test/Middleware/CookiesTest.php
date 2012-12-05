@@ -1,9 +1,10 @@
 <?php
 namespace Phluid\Test\Middleware;
 use Phluid\Test\TestCase;
-use Phluid\Middleware\CookieParser;
+use Phluid\Middleware\Cookies;
+use Phluid\Middleware\Cookies\Cookie;
 
-class CookieParserTest extends TestCase {
+class CookiesTest extends TestCase {
   
   function testCookies() {
     
@@ -29,6 +30,29 @@ class CookieParserTest extends TestCase {
     
   }
   
+  function testSettingCookie() {
+    $this->app->get( '/remember', function( $request, $response, $next ){
+      $response->cookies['something'] = 'test';
+      $response->renderText( 'done' );
+    } );
+    $response = $this->doRequest( 'GET', '/remember' );
+    $this->assertSame( 'something="test"', $response->getHeader( 'Set-Cookie' ) );
+  }
+  
+  function testSettingMultipleCookies(){
+    $this->app->get( '/remember', function( $request, $response, $next ){
+      $response->cookies['hello'] = 'world';
+      $response->cookies['something'] = new Cookie( 'test', array( 'max_age' => 60 ) );
+      $response->renderText( 'done' );
+    } );
+    
+    $response = $this->doRequest( 'GET', '/remember' );
+    
+    $cookie_header = $response->getHeader( 'Set-Cookie' );
+    $this->assertSame( 'hello="world"', $cookie_header[0] );
+    $this->assertSame( 'something="test"; Max-Age=60', $cookie_header[1] );
+  }
+  
   private function cookies( $request ){
     $parser = new CookieParser();
     $parser( $request, null, function(){} );
@@ -36,7 +60,7 @@ class CookieParserTest extends TestCase {
   
   function setUp(){
     parent::setUp();
-    $this->app->inject( new CookieParser() );
+    $this->app->inject( new Cookies() );
   }
   
 }

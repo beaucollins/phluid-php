@@ -202,7 +202,13 @@ class Response extends EventEmitter implements WritableStreamInterface {
     
     $this->conn->write( $this->statusHeader( $status ) . "\r\n" );
     $this->eachHeader( function( $name, $value ){
-      $this->conn->write( "$name: $value" . "\r\n" );
+      if ( is_array( $value ) ) {
+        foreach ( $value as $val ) {
+          $this->conn->write( "$name: $val" . "\r\n" );        
+        }
+      } else {
+        $this->conn->write( "$name: $value" . "\r\n" );        
+      }
     });
     $this->conn->write( "\r\n" );
     
@@ -231,7 +237,6 @@ class Response extends EventEmitter implements WritableStreamInterface {
     }
   }
   
-    
   public function isWritable() {
    return $this->writable; 
   }
