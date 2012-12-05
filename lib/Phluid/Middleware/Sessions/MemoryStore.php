@@ -6,14 +6,14 @@ class MemoryStore implements SessionStoreInterface {
   private $sessions = array();
   
   public function find( $sid, $fn ){
-    if ( array_key_exists( $sid )) {
+    if ( array_key_exists( $sid, $this->sessions )) {
       $fn( $this->sessions[$sid] );
     } else {
-      $fn();
+      $fn( null );
     }
   }
   
-  public function save( $sid, array $session, $fn ){
+  public function save( $sid, $session, $fn ){
     $this->sessions[$sid] = $session;
     $fn();
   }
