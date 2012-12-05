@@ -36,7 +36,7 @@ class CookiesTest extends TestCase {
       $response->renderText( 'done' );
     } );
     $response = $this->doRequest( 'GET', '/remember' );
-    $this->assertSame( 'something="test";', $response->getHeader( 'Set-Cookie' ) );
+    $this->assertSame( 'something=test;', $response->getHeader( 'Set-Cookie' ) );
   }
   
   function testSettingMultipleCookies(){
@@ -49,8 +49,8 @@ class CookiesTest extends TestCase {
     $response = $this->doRequest( 'GET', '/remember' );
     
     $cookie_header = $response->getHeader( 'Set-Cookie' );
-    $this->assertSame( 'hello="world";', $cookie_header[0] );
-    $this->assertSame( 'something="test"; Max-Age=60;', $cookie_header[1] );
+    $this->assertSame( 'hello=world;', $cookie_header[0] );
+    $this->assertSame( 'something=test; Max-Age=60;', $cookie_header[1] );
   }
   
   private function cookies( $request ){
