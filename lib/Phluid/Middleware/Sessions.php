@@ -35,9 +35,9 @@ class Sessions {
       $response->cookies[$this->key] = new Cookie( $this->signSessionId( $request->sessionId, $this->secret ), $this->cookie );
       return $next();
     }
-    $this->store->find( $sid, function( $data ) use ($request, $next) {
+    $this->store->find( $sid, function( $data ) use ($request, $next, $sid ) {
       if ( !$data ) {
-        $this->generate( $request );
+        $this->generate( $request, $sid );
       } else {
         $request->session = new Session( $request, $data );        
       }
@@ -49,8 +49,9 @@ class Sessions {
     return array_key_exists( $key, $this->options ) ? $this->options[$key] : null;
   }
   
-  public static function generate( $request ){
-    $request->sessionId = $sid = Utils::uid( 24 );
+  public static function generate( $request, $sid = null ){
+    if( !$sid ) $sid = Utils::uid( 24 );
+    $request->sessionId = $sid;
     $request->session = new Session( $request );
   }
   
