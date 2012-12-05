@@ -22,13 +22,13 @@ class Cookie {
   function __toString(){
     $val = urlencode( $this->value );
     if ( $val != "" ) {
-      $val = '"' . $val . '"';
+      $val = '"' . $val . '";';
     }
-    if ( $this->domain )    $val .= "; Domain=$this->domain";
-    if ( $this->path )      $val .= "; Path=$this->path";
-    if ( $this->max_age )   $val .= "; Max-Age=$this->max_age";
-    if ( $this->http_only ) $val .= "; HttpOnly";
-    if ( $this->secure )    $val .= "; Secure";
+    if ( $this->domain )    $val .= " Domain=$this->domain;";
+    if ( $this->path )      $val .= " Path=$this->path;";
+    if ( $this->max_age )   $val .= " Max-Age=$this->max_age;";
+    if ( $this->http_only ) $val .= " HttpOnly;";
+    if ( $this->secure )    $val .= " Secure;";
     return $val;
   }
   

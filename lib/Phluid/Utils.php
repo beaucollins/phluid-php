@@ -10,5 +10,9 @@ class Utils {
     }
     return $default;
   }
+  
+  static function uid( $length ){
+    return bin2hex( openssl_random_pseudo_bytes( $length ) );
+  }
     
 }
