@@ -27,7 +27,7 @@ class Sessions {
     if ( $request->session ) return $next();
     $request->sessionStore = $this->store;
     $request->sessionId = $sid = $this->getValidSessionId( $request );
-    $response->on( 'end', function() use ( $request, $next ) {
+    $response->on( 'close', function() use ( $request, $next ) {
       $this->store->save( $request->sessionId, $request->session->getData(), function(){} );
     });
     if ( !$sid ) {

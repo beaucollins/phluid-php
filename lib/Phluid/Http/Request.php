@@ -1,16 +1,11 @@
 <?php
 
 namespace Phluid\Http;
+use React\Http\Request as ReactRequest;
 use React\Socket\ConnectionInterface;
-use React\Stream\ReadableStreamInterface;
-use React\Stream\WritableStreamInterface;
-use React\Stream\Util;
-use Evenement\EventEmitter;
 
-class Request extends EventEmitter implements ReadableStreamInterface {
+class Request extends ReactRequest {
   
-  private $conn;
-  protected $headers;
   private $memo;
   
   public $path;
@@ -19,56 +14,12 @@ class Request extends EventEmitter implements ReadableStreamInterface {
   
   private $readable = true;
   
-  function __construct( ConnectionInterface $conn ){
-    $this->conn = $conn;
+  public $headers;
+  
+  public function __construct($method, $path, $query = array(), $version = '1.1', $headers = array()) {
+    parent::__construct( $method, $path, $query, $version, $headers );
     $this->memo = array();
-    
-    $parser = new HeaderParser( $conn );
-    
-    $parser->on( 'headers', function( $headers, $trailing ){
-      $contentLength = 0;
-      $this->headers = $headers;
-      if ( strpos( $headers->path, '?' ) ) {
-        list( $path, $querystring ) = explode( '?', $headers->path, 2 );
-        $this->path = $path;
-        parse_str( $querystring, $query );
-        $this->query = $query;
-      } else {
-        $this->path = $headers->path;
-      }
-      $this->method = $headers->method;
-      
-      
-      $this->emit( 'headers', array( $headers , $trailing ) );
-      
-      if ( $this->expectsBody() ) {
-        if ( $trailing && strlen( $trailing ) > 0 ) {
-          $contentLength += strlen( $trailing );
-          $this->emit( 'data', array( $trailing ) );
-        }
-        
-        $totalLength = $this->getContentLength();
-        
-        if ( $contentLength == $totalLength ) {
-          $this->close();
-          return;
-        }
-        
-        $this->conn->on( 'data', function( $data ) use ( &$contentLength, $totalLength ){
-          // TODO: Chunk encoding
-          // TODO: Length exceeds Content-Length header 401
-          $contentLength += strlen( $data );
-          $this->emit( 'data', array( $data ) );
-          if ( $contentLength == $totalLength ) {
-            $this->close();
-          }
-          
-        } );
-      } else {
-        $this->close();
-      }
-      
-    } );    
+    $this->headers = new Headers( $method, $path, $version, $headers);
   }
   
   public function __toString(){
@@ -87,21 +38,9 @@ class Request extends EventEmitter implements ReadableStreamInterface {
       return $this->query[ $param ];
     }
   }
-    
-  public function getHeaders(){
-    return $this->headers;
-  }
-  
+      
   public function getHeader( $header ){
     return $this->headers[$header];
-  }
-  
-  public function getPath(){
-    return $this->path;
-  }
-  
-  public function getMethod(){
-    return $this->method;
   }
   
   public function getHost(){
@@ -143,31 +82,6 @@ class Request extends EventEmitter implements ReadableStreamInterface {
   
   public function __unset( $key ){
     unset( $this->memo[$key] );
-  }
-  
-  public function isReadable(){
-    return $this->readable;
-  }
-  
-  public function pause(){
-    $this->conn->pause();
-    $this->emit( 'pause' );
-  }
-  
-  public function resume(){
-    $this->conn->resume();
-    $this->emit( 'resume' );
-  }
-  
-  public function close(){
-    $this->readable = false;
-    $this->emit( 'end' );
-    $this->removeAllListeners();
-  }
-  
-  public function pipe( WritableStreamInterface $dest, array $options = array() ){
-    Util::pipe( $this, $dest, $options );
-    return $dest;
   }
   
 }

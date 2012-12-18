@@ -11,10 +11,15 @@ class AppTest extends PHPUnit_Framework_TestCase {
     $this->app = $app;
   }
   
+  
+  function buildRequest( $method, $path = "/" ){
+    return new Request( $method, $path );
+  }
+  
   function testIndexRequest(){
     //fake request
     $app = $this->app;
-    $req = new Request( 'GET', '/' );
+    $req = $this->buildRequest( 'GET', '/' );
     $res = $app->serve( $req );
     
     $this->assertSame( 'Hello World', $res->getBody() );
@@ -22,7 +27,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
   
   function testTemplateRequest(){
     $app = $this->app;
-    $req = new Request( 'GET', '/profile' );
+    $req = $this->buildRequest( 'GET', '/profile' );
     $res = $app->serve( $req );
     
     $responseText = <<<RESPONSE
@@ -35,7 +40,7 @@ RESPONSE;
   
   function testMiddleware(){
     
-    $req = new Request( 'GET', '/' );
+    $req = $this->buildRequest( 'GET', '/' );
     $res = $this->app->serve( $req );
     
     $this->assertSame( 'Awesomesauce', $res->getHeader( 'X-SERVER' ) );
@@ -43,7 +48,7 @@ RESPONSE;
   }
   
   function testMiddlewareClosure(){
-    $req = new Request( 'GET', '/reverse' );
+    $req = $this->buildRequest( 'GET', '/reverse' );
     $res = $this->app->serve( $req );
     
     $this->assertSame( strrev('Hello World'), $res->getBody() );
@@ -52,7 +57,7 @@ RESPONSE;
 Hello <a href="http://viewsource.beaucollins.com">Beau Collins</a>    
 RESPONSE;
     
-    $req = new Request( 'GET', '/profile/reverse' );
+    $req = $this->buildRequest( 'GET', '/profile/reverse' );
     $res = $this->app->serve( $req );
     $this->assertSame( strrev(trim($responseText)), $res->getBody() );
     

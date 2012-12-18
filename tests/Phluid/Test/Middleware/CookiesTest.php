@@ -8,7 +8,7 @@ class CookiesTest extends TestCase {
   
   function testCookies() {
     
-    $this->doRequest( 'GET', '/', array( 'Cookie' => 'something=awesome') );
+    $this->doRequest( 'GET', '/', array(), array( 'Cookie' => 'something=awesome') );
     
     $this->assertNotNull( $this->request->cookies  );
     $this->assertArrayHasKey( 'something', $this->request->cookies );
@@ -19,7 +19,7 @@ class CookiesTest extends TestCase {
     
     $cookie = '__utma=55650728.1809615938.1317503009.1353223329.1353260336.1061; __utmb=55650728.1.10.1353260336; __utmc=55650728; __utmz=55650728.1352924698.1053.58.utmcsr=google.com|utmccn=(referral)|utmcmd=referral|utmcct=/reader/view/; reddit_first=%7B%22organic_pos%22%3A%206%2C%20%22firsttime%22%3A%20%22first%22%7D';
     
-    $this->doRequest( 'GET', '/', array(
+    $this->doRequest( 'GET', '/', array(), array(
       'cookie' => $cookie
     ));
     

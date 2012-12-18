@@ -11,7 +11,7 @@ class Response extends \Phluid\Http\Response {
     parent::__construct( $conn, $request );
   }
   
-  public function writeHead( $status = 200, $headers = array() ){
+  public function writeHead($status = 200, array $headers = array()){
     parent::writeHead( $status, $headers );
     $this->captureBody = true;
   }

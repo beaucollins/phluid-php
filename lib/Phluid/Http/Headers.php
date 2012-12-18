@@ -7,15 +7,13 @@ class Headers implements \ArrayAccess {
   private $header_names;
   public $method;
   public $path;
-  public $protocol;
   public $version;
   
-  function __construct( $method, $path, $protocol = 'HTTP', $version = '1.1', $headers = array() ){
+  function __construct( $method, $path, $version = '1.1', $headers = array() ){
     $this->headers = array();
     $this->header_names = array();
     $this->method = $method;
     $this->path = $path;
-    $this->protocol = $protocol;
     $this->version = $version;
     
     $that = $this;

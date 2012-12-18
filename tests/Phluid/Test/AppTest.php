@@ -86,7 +86,7 @@ class AppTest extends TestCase {
       });
     } );
     
-    $response = $this->doRequest( 'POST', '/robot', array(), false );
+    $response = $this->doRequest( 'POST', '/robot', array(), array(), false );
     $response->on( 'end', function() use( $response ){
       $this->assertSame( '18', $response->getBody() );
     });

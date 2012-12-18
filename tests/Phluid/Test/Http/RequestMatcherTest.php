@@ -38,8 +38,7 @@ class RequestMatcherTest extends TestCase {
   }
   
   function makeRequest( $method, $path ){
-    $headers = new Headers( $method, $path );
-    $request = new Request( $headers );
+    $request = new Request( $method, $path );
     $request->method = $method;
     $request->path = $path;
     return $request;

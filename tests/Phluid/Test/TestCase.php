@@ -14,10 +14,9 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     $this->app->createServer( $this->http );
   }
   
-  public function doRequest( $method = 'GET', $path = '/', $headers = array(), $auto_close = true ){
+  public function doRequest( $method = 'GET', $path = '/', $query = array(), $headers = array(), $auto_close = true ){
     
-    $request_headers = new \Phluid\Http\Headers( $method, $path, 'HTTP', '1.1', $headers );
-    $this->request = $request = new Request( $request_headers );
+    $this->request = $request = new Request( $method, $path, $query, '1.1', $headers );
     $request->method = $method;
     $request->path = $path;
     $response = new Response( $request );

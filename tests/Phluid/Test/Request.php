@@ -3,10 +3,9 @@
 namespace Phluid\Test;
 
 class Request extends \Phluid\Http\Request {
-    
-  function __construct( $headers ){
-    parent::__construct( new Connection() );
-    $this->headers = $headers;
+  
+  public function __construct($method, $path, $query = array(), $httpVersion = '1.1', $headers = array()) {
+    parent::__construct( $method, $path, $query, $httpVersion, $headers );
     $this->emit( 'headers', array( $headers ) );
   }
   

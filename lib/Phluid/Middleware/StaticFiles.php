@@ -35,17 +35,20 @@ class StaticFiles {
         $response->setHeader( 'Content-Type', $this->mimeForFileSuffix( $file_info['extension'] ) );
         $response->sendFile( $path );
         return;
+      } else {
+        $next();      
       }
+    } else {
+      $next();      
     }
-    $next();      
   }
   
   private function isStaticRequest( $request ){
-    return strpos( $request->path, $this->prefix ) === 0 && $request->getMethod() == 'GET';
+    return strpos( $request->getPath(), $this->prefix ) === 0 && $request->getMethod() == 'GET';
   }
   
   private function pathForRequest( $request ){
-    $path = $this->path . $request->path;
+    $path = $this->path . $request->getPath();
     if ( is_readable( $path ) && !is_dir( $path ) ) {
       return $path;
     }

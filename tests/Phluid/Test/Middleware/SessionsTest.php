@@ -33,7 +33,7 @@ class SessionsTest extends TestCase {
     $this->assertSame( ':)', $response->getBody() );
     
     $sid = $response->cookies[$this->sessions->key]->value;
-    $response = $this->doRequest( 'GET', '/session', array( 'Cookie' => "{$this->sessions->key}={$sid}" ) );
+    $response = $this->doRequest( 'GET', '/session', array(), array( 'Cookie' => "{$this->sessions->key}={$sid}" ) );
     $this->assertSame( 2, $this->request->session->visits );
     
     $this->assertSame( ':)', $response->getBody() );

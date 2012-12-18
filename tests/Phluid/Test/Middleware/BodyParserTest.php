@@ -19,7 +19,7 @@ class BodyParserTest extends \Phluid\Test\TestCase {
     $this->app->inject( $parser );
     
     $body = json_encode( $thing );
-    $response = $this->doRequest( 'POST', '/', array(
+    $response = $this->doRequest( 'POST', '/', array(), array(
       'Content-Type' => 'application/json',
       'Content-Length' => strlen( $body )
     ), false );
@@ -37,7 +37,7 @@ class BodyParserTest extends \Phluid\Test\TestCase {
     $body = http_build_query( $values );
     $this->app->inject( $parser );
     
-    $this->doRequest( 'POST', '/', array(
+    $this->doRequest( 'POST', '/', array(), array(
       'Content-Type' => 'application/x-www-form-urlencoded',
       'Content-Length' => strlen( $body )
     ), false );
@@ -61,7 +61,7 @@ class BodyParserTest extends \Phluid\Test\TestCase {
       
     } );
     
-    $response = $this->doRequest( 'POST', '/', array(
+    $response = $this->doRequest( 'POST', '/', array(), array(
       'Content-Type' => 'multipart/form-data; boundary=----WebKitFormBoundaryoOeNyQKwEVuvehNw'
     ), false);
     $this->sendFile( realpath('.') . '/tests/files/multipart-body' );
@@ -88,7 +88,7 @@ class BodyParserTest extends \Phluid\Test\TestCase {
       $next();
     });
     
-    $response = $this->doRequest( 'POST', '/', array(
+    $response = $this->doRequest( 'POST', '/', array(), array(
       'Content-Type' => 'multipart/form-data; boundary=----WebKitFormBoundaryAYD2hRdSJxpcdK2a'
     ), false );
     
@@ -100,7 +100,7 @@ class BodyParserTest extends \Phluid\Test\TestCase {
     $parser = new MultipartBodyParser( realpath( '.' ) . '/tests/uploads' );
     $this->app->inject( $parser );
     
-    $response = $this->doRequest( 'POST', '/', array( 'Content-Type' => 'text/plain'), false );
+    $response = $this->doRequest( 'POST', '/', array(), array( 'Content-Type' => 'text/plain'), false );
     $this->send( "Hello" );
     $this->assertNull( $this->request->body );
   }

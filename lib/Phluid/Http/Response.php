@@ -1,48 +1,24 @@
 <?php
 
 namespace Phluid\Http;
-use Evenement\EventEmitter;
+use React\Http\Response as ReactResponse;
 use React\Socket\ConnectionInterface;
-use React\Stream\WritableStreamInterface;
-use React\Stream\ReadableStreamInterface;
 use Phluid\Utils;
 use Phluid\View;
 
-class Response extends EventEmitter implements WritableStreamInterface {
+class Response extends ReactResponse {
   
-  private $conn;
-  private $closed = false;
-  private $writable = true;
-  private $headWritten;
-  private $chunkedEncoding = true;
-  private $options;
   private $request;
   public $status = 200;
+  private $options = array();
+  private $conn;
   
   private $headers = array();
   
   function __construct( ConnectionInterface $conn, Request $request ){
-    $this->request = $request;
     $this->conn = $conn;
-    
-    $this->conn->on('end', function () {
-        $this->close();
-    });
-
-    $this->conn->on('error', function ($error) {
-        $this->emit('error', array($error, $this));
-        $this->close();
-    });
-
-    $this->conn->on('drain', function () {
-        $this->emit('drain');
-    });
-    
-    $this->options = array(
-      'default_layout' => null,
-      'view_path' => null
-    );
-    
+    parent::__construct( $conn );
+    $this->request = $request;
   }
   
   public function __toString(){
@@ -193,37 +169,7 @@ class Response extends EventEmitter implements WritableStreamInterface {
     $this->writeHead( $this->status, $this->headers );
   }
   
-  public function writeHead( $status = 200, $headers = array() ){
-    if ( $this->headWritten ) {
-      throw new \Exception("Response head has already been written");
-    }
     
-    $this->emit( 'headers' );
-    
-    $this->conn->write( $this->statusHeader( $status ) . "\r\n" );
-    $this->eachHeader( function( $name, $value ){
-      if ( is_array( $value ) ) {
-        foreach ( $value as $val ) {
-          $this->conn->write( "$name: $val" . "\r\n" );        
-        }
-      } else {
-        $this->conn->write( "$name: $value" . "\r\n" );        
-      }
-    });
-    $this->conn->write( "\r\n" );
-    
-    if ( $this->getHeader( 'Content-Length' ) ) {
-      $this->chunkedEncoding = false;
-    }
-    
-    $this->headWritten = true;
-    
-  }
-  
-  public function statusHeader( $status = 200 ){
-    return "HTTP/1.1 " . $status;
-  }
-  
   /**
    * Iterate throuch each header name/value with a callback
    *
@@ -237,52 +183,9 @@ class Response extends EventEmitter implements WritableStreamInterface {
     }
   }
   
-  public function isWritable() {
-   return $this->writable; 
+  public function writeHead($status = 200, array $headers = array()){
+    $this->emit('headers');
+    parent::writeHead( $status, $headers);
   }
-  
-  public function write( $data ) {
-      if ( !$this->headWritten ) {
-          throw new \Exception( 'Response head has not yet been written.' );
-      }
-
-      if ( $this->chunkedEncoding ) {
-          $len = strlen( $data );
-          $chunk = dechex( $len ) . "\r\n" . $data . "\r\n";
-          $flushed = $this->conn->write( $chunk );
-      } else {
-          $flushed = $this->conn->write( $data );
-      }
-
-      return $flushed;
-  }
-  
-  public function end( $data = null ) {
-      if ( null !== $data ) {
-          $this->write( $data );
-      }
-
-      if ( $this->chunkedEncoding ) {
-          $this->conn->write( "0\r\n\r\n" );
-      }
-
-      $this->emit( 'end' );
-      $this->removeAllListeners();
-      $this->conn->end();
-  }
-  
-  public function close() {
-      if ( $this->closed ) {
-          return;
-      }
-
-      $this->closed = true;
-
-      $this->writable = false;
-      $this->emit( 'close' );
-      $this->removeAllListeners();
-      $this->conn->close();
-  }
-  
-      
+        
 }
