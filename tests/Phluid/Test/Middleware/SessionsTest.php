@@ -2,6 +2,7 @@
 namespace Phluid\Test\Middleware;
 use Phluid\Test\TestCase;
 use Phluid\Middleware\Sessions;
+use Phluid\Middleware\Sessions\MemoryStore as SessionsMemoryStore;
 use Phluid\Middleware\Cookies;
 
 class SessionsTest extends TestCase {
@@ -45,36 +46,9 @@ class SessionsTest extends TestCase {
     parent::setUp();
     
     $this->app->inject( new Cookies() );
-    $session_store = new SessionStoreStub( array( 'testsession' => array( 'hello' => 'world' ) ) );
+    $session_store = new SessionsMemoryStore( array( 'testsession' => array( 'hello' => 'world' ) ) );
     $this->sessions = new Sessions( array( 'secret' => 'lol', 'store' => $session_store  ) );
     $this->app->inject( $this->sessions );
   }
   
-}
-
-use Phluid\Middleware\Sessions\SessionStoreInterface;
-class SessionStoreStub implements SessionStoreInterface {
-  
-  public $sessions;
-  
-  function __construct( $sessions = array() ){
-    $this->sessions = $sessions;
-  }
-  
-  public function find( $sid, $fn ) {
-    $session = null;
-    if( array_key_exists( $sid, $this->sessions ) ) $session = $this->sessions[$sid];
-    $fn( $session );
-  }
-  
-  public function save( $sid, $session, $fn ){
-    $this->sessions[ $sid ] = $session;
-    $fn();
-  }
-  
-  public function destroy( $sid, $fn ){
-    if ( array_key_exists( $sid, $this->sessions ) ) unset( $this->sessions[$sid] );
-    $fn();
-  }
-   
 }
