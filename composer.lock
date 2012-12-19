@@ -1,5 +1,5 @@
 {
-    "hash": "63cb4d269590477fc1110988ae7f99f6",
+    "hash": "4576d3cf01f9a4e3c89f977c5374fcaa",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -26,6 +26,7 @@
                     "Evenement": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -268,6 +269,7 @@
                     "React\\Promise": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
