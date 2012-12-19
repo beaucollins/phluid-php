@@ -21,7 +21,7 @@ class Request extends EventEmitter implements ReadableStreamInterface {
     $this->query = $request->getQuery();
     
     // forward the events data, end, close
-    Utils::forwardEvents( $this, $request, array( 'pipe', 'data', 'close ') );
+    Utils::forwardEvents( $this, $request, array( 'pipe', 'data', 'close', 'error' ) );
     
     $request->on( 'end', function(){
       if ( !$this->ended ) {
