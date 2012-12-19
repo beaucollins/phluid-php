@@ -1,6 +1,6 @@
 #Phluid
 
-A microframework for PHP. Quite heavily inspired by [Express][]. [![Build Status](https://secure.travis-ci.org/beaucollins/phluid-php.png?branch=master)](https://travis-ci.org/beaucollins/phluid-php)
+A microframework for PHP. Quite heavily inspired by [Express][]. [![Build Status](https://secure.travis-ci.org/beaucollins/phluid-php.png?branch=http-rebuild)](https://travis-ci.org/beaucollins/phluid-php)
 
 Built on top of [ReactPHP](https://github.com/reactphp/react).
 
