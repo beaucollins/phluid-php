@@ -19,9 +19,8 @@ class Utils {
   static function forwardEvents( EventEmitter $to, EventEmitter $from, array $events ){
     foreach( $events as $event ) {
       $from->on( $event, function() use( $event, $to ){
-        $args = func_get_args();
-        array_unshift( $args, $event );
-        call_user_func_array( array( $to, 'emit' ), $args );
+        $event_args = func_get_args();
+        call_user_func_array( array( $to, 'emit' ), array( $event, $event_args ) );
       });
     }
   }
