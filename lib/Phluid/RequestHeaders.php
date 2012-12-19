@@ -31,7 +31,8 @@ class RequestHeaders extends Headers {
   }
   
   public function __toString(){
-    return $this->method . ' ' . $this->getUri();
+    $method = str_pad( $this->method, strlen( $this->method ) - 4 );
+    return $method . ' ' . $this->getUri();
   }
   
   public function getUri(){

@@ -29,6 +29,10 @@ class Request extends EventEmitter implements ReadableStreamInterface {
     return $this->headers->__toString();
   }
   
+  public function expectsBody(){
+    return !in_array( $this->getMethod(), array( 'HEAD', 'GET' ) );
+  }
+  
   public function getMethod(){
     return $this->headers->method;
   }
