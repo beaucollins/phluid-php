@@ -166,7 +166,7 @@ class Response extends ReactResponse {
       $headers = $status_or_headers;
     }
     $this->setHeaders( $headers );
-    $this->writeHead( $this->status, $this->headers );
+    $this->writeHead( $this->status, $this->headers->toArray() );
   }
   
     

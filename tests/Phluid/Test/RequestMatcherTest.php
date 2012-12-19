@@ -1,7 +1,7 @@
 <?php
 
 namespace Phluid\Test;
-use Phluid\Http\RequestMatcher;
+use Phluid\RequestMatcher;
 use Phluid\Http\Headers;
 
 class RequestMatcherTest extends TestCase {
@@ -13,7 +13,8 @@ class RequestMatcherTest extends TestCase {
   public function testPathVariables(){
     $matcher = new RequestMatcher( 'GET', '/show/:person' );
     $request = $this->makeRequest( 'GET', '/show/beau' );
-    $this->assertArrayHasKey( 'person', $matcher( $request ), "Route should match path" );
+    $matches = $matcher( $request );
+    $this->assertArrayHasKey( 'person', $matches, "Route should match path" );
   }
   
   public function testSlashDelimiter(){
@@ -36,12 +37,5 @@ class RequestMatcherTest extends TestCase {
     $this->assertArrayHasKey( 'name', $matches  );
     $this->assertSame( 'beau', $matches['name'] );
   }
-  
-  function makeRequest( $method, $path ){
-    $request = new Request( $method, $path );
-    $request->method = $method;
-    $request->path = $path;
-    return $request;
-  }
-  
+    
 }

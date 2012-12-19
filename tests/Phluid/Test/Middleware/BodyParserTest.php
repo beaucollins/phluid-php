@@ -22,10 +22,10 @@ class BodyParserTest extends \Phluid\Test\TestCase {
     $response = $this->doRequest( 'POST', '/', array(), array(
       'Content-Type' => 'application/json',
       'Content-Length' => strlen( $body )
-    ), false );
-    $this->send( $body );
+    ), function( $request ) use ( $body ){
+      $this->send( $body );
+    } );
         
-    
     $this->assertSame( $thing->awesome, $this->request->body->awesome );
     
   }
@@ -40,9 +40,10 @@ class BodyParserTest extends \Phluid\Test\TestCase {
     $this->doRequest( 'POST', '/', array(), array(
       'Content-Type' => 'application/x-www-form-urlencoded',
       'Content-Length' => strlen( $body )
-    ), false );
+    ), function() use ( $body ){
+      $this->send( $body );
+    } );
     
-    $this->send( $body );
     $this->assertSame( $values, $this->request->body );
     
   }
@@ -63,8 +64,9 @@ class BodyParserTest extends \Phluid\Test\TestCase {
     
     $response = $this->doRequest( 'POST', '/', array(), array(
       'Content-Type' => 'multipart/form-data; boundary=----WebKitFormBoundaryoOeNyQKwEVuvehNw'
-    ), false);
-    $this->sendFile( realpath('.') . '/tests/files/multipart-body' );
+    ), function(){
+      $this->sendFile( realpath('.') . '/tests/files/multipart-body' );
+    });
   }
   
   public function testMultipartAssocParsing(){
@@ -90,9 +92,9 @@ class BodyParserTest extends \Phluid\Test\TestCase {
     
     $response = $this->doRequest( 'POST', '/', array(), array(
       'Content-Type' => 'multipart/form-data; boundary=----WebKitFormBoundaryAYD2hRdSJxpcdK2a'
-    ), false );
-    
-    $this->sendFile( realpath('.') . '/tests/files/multipart-assoc' );
+    ), function(){
+      $this->sendFile( realpath('.') . '/tests/files/multipart-assoc' );
+    } );
     
   }
   
@@ -100,17 +102,10 @@ class BodyParserTest extends \Phluid\Test\TestCase {
     $parser = new MultipartBodyParser( realpath( '.' ) . '/tests/uploads' );
     $this->app->inject( $parser );
     
-    $response = $this->doRequest( 'POST', '/', array(), array( 'Content-Type' => 'text/plain'), false );
-    $this->send( "Hello" );
-    $this->assertNull( $this->request->body );
-  }
-    
-  private function send( $data ){
-    $this->request->send( $data );
-  }
-  
-  private function sendFile( $file ){
-    $this->request->sendFile( $file );
+    $response = $this->doRequest( 'POST', '/', array(), array( 'Content-Type' => 'text/plain'), function(){
+      $this->send( "Hello" );
+    } );
+    $this->assertObjectNotHasAttribute( 'body', $this->request );
   }
   
   function setUp(){

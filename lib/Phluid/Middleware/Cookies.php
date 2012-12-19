@@ -6,8 +6,10 @@ class Cookies {
   
   function __invoke( $request, $response, $next ){
     $cookie = $request->getHeader( 'Cookie' );
-    if ( $cookie && !$request->cookies ) {
+    if ( $cookie && !property_exists( $request, 'cookies' ) ) {
       $request->cookies = $this->parseCookie( $cookie );
+    } else {
+      $request->cookies = array();
     }
     $response->cookies = new CookieJar();
     $response->on( 'headers', function() use ( $response ){

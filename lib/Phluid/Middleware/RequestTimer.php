@@ -12,11 +12,11 @@ class RequestTimer {
   
   public function __invoke( $request, $response, $next ){
     $start = microtime( TRUE );
-    $response->once( 'headers', function() use ( $start, $response ){
+    $response->on( 'headers', function() use ( $start, $response ){
       $duration = ceil( ( microtime( TRUE ) - $start) * 1000 );
       $response->setHeader( $this->header, "$duration ms" );
     } );
-    $response->once( 'close', function() use ($start, $request ){
+    $response->on( 'end', function() use ($start, $request ){
       $request->duration = $duration = ceil( ( microtime( TRUE ) - $start) * 1000 );
     });
     $next();

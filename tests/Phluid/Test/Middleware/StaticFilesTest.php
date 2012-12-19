@@ -19,8 +19,7 @@ class StaticFileTest extends TestCase {
     $response = $this->doRequest( 'GET', '/hello_world.txt' );
         
     $this->assertSame( 200, $response->getStatus() );
-    $this->assertSame( 'Hello world', $response->getBody() );
-    $this->assertArrayHasKey( 'CONTENT-TYPE', $response->getHeaders() );
+    $this->assertSame( 'Hello world', $this->getBody() );
     $this->assertSame( $response->getHeader( 'Content-Type'), 'text/plain' );
     
     
@@ -34,7 +33,6 @@ class StaticFileTest extends TestCase {
     $response = $this->doRequest( 'GET', '/200.jpg' );
     
     $this->assertSame( 200, $response->getStatus() );
-    $this->assertArrayHasKey( 'CONTENT-TYPE', $response->getHeaders() );
     $this->assertSame( $response->getHeader( 'Content-Type'), 'image/jpeg' );
     
   }
@@ -47,7 +45,6 @@ class StaticFileTest extends TestCase {
     $response = $this->doRequest( 'GET', '/style.css' );
     
     $this->assertSame( 200, $response->getStatus() );
-    $this->assertArrayHasKey( 'CONTENT-TYPE', $response->getHeaders() );
     $this->assertSame( $response->getHeader( 'Content-Type'), 'text/css' );
     
   }

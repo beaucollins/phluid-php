@@ -23,20 +23,20 @@ class SessionsTest extends TestCase {
       }
       $request->session['visits'] += 1;
       
-      $response->renderString( ':)' );
+      $response->renderText( ':)' );
     } );
     
     $response = $this->doRequest( 'GET', '/session' );
     $this->assertSame( 'mark', $this->request->session->name );
     $this->assertSame( $this->request->session->name, $this->request->session['name'] );
     $this->assertSame( 1, $this->request->session->visits );
-    $this->assertSame( ':)', $response->getBody() );
+    $this->assertSame( ':)', $this->getBody() );
     
     $sid = $response->cookies[$this->sessions->key]->value;
     $response = $this->doRequest( 'GET', '/session', array(), array( 'Cookie' => "{$this->sessions->key}={$sid}" ) );
     $this->assertSame( 2, $this->request->session->visits );
     
-    $this->assertSame( ':)', $response->getBody() );
+    $this->assertSame( ':)', $this->getBody() );
     
   }
   

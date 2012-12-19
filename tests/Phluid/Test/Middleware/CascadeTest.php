@@ -10,7 +10,7 @@ class CascadeTest extends TestCase {
   function testCascade(){
     
     $incrementer = function( $request, $response, $next ){
-      if ( $request->inc_value ) {
+      if ( property_exists( $request, 'inc_value' ) ) {
         $request->inc_value ++;
       } else {
         $request->inc_value = 1;

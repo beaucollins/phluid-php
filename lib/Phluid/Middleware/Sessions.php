@@ -24,10 +24,10 @@ class Sessions {
   }
   
   function __invoke( $request, $response, $next ){
-    if ( $request->session ) return $next();
+    if ( property_exists( $request, 'session' ) ) return $next();
     $request->sessionStore = $this->store;
     $request->sessionId = $sid = $this->getValidSessionId( $request );
-    $response->on( 'close', function() use ( $request, $next ) {
+    $response->on( 'end', function() use ( $request, $next ) {
       $this->store->save( $request->sessionId, $request->session->getData(), function(){} );
     });
     if ( !$sid ) {
@@ -67,6 +67,7 @@ class Sessions {
   }
   
   private function getValidSessionId( $request ){
+    if ( !array_key_exists( $this->key, $request->cookies ) ) return;
     $signedId = $request->cookies[$this->key];
     if ( $signedId && strpos( $signedId, ' s:' ) ) {
       list( $sid, $signature ) = explode( ' s:', $signedId, 2 );

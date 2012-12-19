@@ -10,7 +10,7 @@ class CookiesTest extends TestCase {
     
     $this->doRequest( 'GET', '/', array(), array( 'Cookie' => 'something=awesome') );
     
-    $this->assertNotNull( $this->request->cookies  );
+    $this->assertObjectHasAttribute( 'cookies', $this->request  );
     $this->assertArrayHasKey( 'something', $this->request->cookies );
     
   }

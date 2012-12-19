@@ -12,11 +12,14 @@ class ExceptionHandlerTest extends \Phluid\Test\TestCase {
     
     $this->app->get( '/gone', $handler, function( $request, $response ){
       // this template does not exist
+      $response->on('data', function(){
+        echo "Data?" . PHP_EOL;
+      });
       $response->render( 'lol' );
     });
     
     $response = $this->doRequest( 'GET', '/gone' );
-    $this->assertTag( array( 'tag' => 'title', 'content' => 'Application Error:' ), $response->getBody() );
+    $this->assertTag( array( 'tag' => 'title', 'content' => 'Application Error:' ), $this->getBody() );
     
   }
   

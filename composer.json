@@ -13,7 +13,7 @@
   ],
   "require" : {
     "php" : ">=5.3",
-    "react/react" : "*"
+    "react/react" : "dev-master"
   },
   "require-dev" : {
     

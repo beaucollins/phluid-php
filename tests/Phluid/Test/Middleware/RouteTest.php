@@ -15,14 +15,14 @@ class RouteTest extends TestCase {
       $response->renderText( $request->param('person') );
     });
     $response = $this->doRequest( 'GET', '/show/beau' );
-    $this->assertSame( 'beau', $response->getBody() );
+    $this->assertSame( 'beau', $this->getBody() );
     
   }
   
   public function testRouteWithArrayCallback(){
     $this->app->get( '/hello', array( $this, 'getIndex' ) );
     $response = $this->doRequest( 'GET', '/hello' );
-    $this->assertSame( 'hello world', $response->getBody() );
+    $this->assertSame( 'hello world', $this->getBody() );
   }
   
   public function testInvokigRouteWithFilters(){
@@ -36,7 +36,7 @@ class RouteTest extends TestCase {
       $response->renderText( $request->param('person') );
     });
     $response = $this->doRequest( 'GET', '/show/beau' );
-    $this->assertSame( strrev('beau'), $response->getBody() );
+    $this->assertSame( strrev('beau'), $this->getBody() );
   }
   
   public function testInvokingRouteWithRedirectFilter(){

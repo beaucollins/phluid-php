@@ -6,7 +6,7 @@ use React\Stream\WritableStreamInterface;
 
 class Connection extends EventEmitter implements ConnectionInterface {
   
-  private $data = '';
+  public $data = '';
   private $readable = true;
   private $writable = true;
   public $bufferSize = 1024;

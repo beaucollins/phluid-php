@@ -1,6 +1,6 @@
 <?php
 
-namespace Phluid\Http;
+namespace Phluid;
 
 class RequestMatcher {
   
@@ -14,16 +14,16 @@ class RequestMatcher {
     
   }
   
-  public function matches( $request ){
-    if ( in_array( $request->method, $this->methods ) ) {
-      if( preg_match( $this->pattern, $request->path, $matches) ){
+  public function matches( Request $request ){
+    if ( in_array( $request->getMethod(), $this->methods ) ) {
+      if( preg_match( $this->pattern, $request->getPath(), $matches) ){
         return $matches;
       }
     }
     return false;
   }
   
-  public function __invoke( $request ){
+  public function __invoke( Request $request ){
     return $this->matches( $request );
   }
   

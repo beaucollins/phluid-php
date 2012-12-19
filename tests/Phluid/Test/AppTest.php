@@ -16,7 +16,7 @@ class AppTest extends TestCase {
         
     $response = $this->doRequest();
     
-    $this->assertSame( 'Hello World', $response->getBody() );
+    $this->assertSame( 'Hello World', $this->getBody() );
   }
   
   public function testFullRequest(){
@@ -28,7 +28,7 @@ class AppTest extends TestCase {
     
     $response = $this->doRequest( 'GET', '/users/beau' );
     
-    $this->assertSame( 'Hello beau', $response->getBody() );
+    $this->assertSame( 'Hello beau', $this->getBody() );
       
   }
   
@@ -37,7 +37,7 @@ class AppTest extends TestCase {
     $this->app->get( '/awesome', new HelloWorldAction );
     $response = $this->doRequest( 'GET', '/awesome' );
     
-    $this->assertSame( 'Hello World!', $response->getBody() );
+    $this->assertSame( 'Hello World!', $this->getBody() );
     
   }
   
@@ -45,10 +45,10 @@ class AppTest extends TestCase {
     
     $this->app->inject( new Lol() );
     $response = $this->doRequest();
-    $this->assertSame( 'LOL', $response->getBody() );
+    $this->assertSame( 'LOL', $this->getBody() );
     
     $response = $this->doRequest();
-    $this->assertSame( 'Hello World', $response->getBody() );
+    $this->assertSame( 'Hello World', $this->getBody() );
     
   }
   
@@ -70,7 +70,7 @@ class AppTest extends TestCase {
     $this->app->inject( new HandleException() );
     $response = $this->doRequest( 'GET', '/doesnt-exists' );
         
-    $this->assertSame( 'Uh, Oh', $response->getBody() );
+    $this->assertSame( 'Uh, Oh', $this->getBody() );
     
   }
   
@@ -82,22 +82,16 @@ class AppTest extends TestCase {
         $body .= $data;
       });
       $request->on( 'end', function() use ( &$body, $response ) {
-        $response->renderString( strlen( $body ) );
+        $response->renderText( strlen( $body ) );
       });
     } );
     
     $response = $this->doRequest( 'POST', '/robot', array(), array(), false );
     $response->on( 'end', function() use( $response ){
-      $this->assertSame( '18', $response->getBody() );
+      $this->assertSame( '18', $this->getBody() );
     });
     
     $this->send( '?something=awesome' );
-  }
-  
-
-  
-  private function send( $data ){
-    $this->request->send( $data );
   }
   
 }
@@ -107,7 +101,7 @@ class HelloWorldAction {
   private $response = "Hello World!";
   
   public function __invoke( $request, $response ){
-    $response->renderString( $this->response );
+    $response->renderText( $this->response );
   }
   
 }
@@ -118,7 +112,7 @@ class HandleException {
     try {
       $next();
     } catch (\Exception $e) {
-      $response->renderString( 'Uh, Oh', 'text/plain', $e->getCode() );
+      $response->renderText( 'Uh, Oh', 'text/plain', $e->getCode() );
     }
   }
   
@@ -135,7 +129,7 @@ class Lol {
   function __invoke( $req, $res, $next ){
     if ($this->lol) {
       $this->lol = false;
-      $res->renderString( "LOL" );
+      $res->renderText( "LOL" );
     } else {
       $next();
     }

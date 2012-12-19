@@ -1,33 +1,14 @@
 <?php
-namespace Phluid\Http;
-use React\Http\Request as HttpRequest;
+namespace Phluid;
 
 class Headers implements \ArrayAccess {
   
-  private $headers;
-  private $header_names;
-  public $method;
-  public $path;
-  public $version;
-  public $query;
+  protected $headers;
+  protected $header_names;
   
-  public static function fromHttpRequest( HttpRequest $request ){
-     return new Headers(
-       $request->getMethod(),
-       $request->getPath(),
-       $request->getQuery(),
-       $request->getHttpVersion(),
-       $request->getHeaders()
-     );
-  }
-  
-  function __construct( $method, $path, $query, $version = '1.1', $headers = array() ){
+  function __construct( $headers = array() ){
     $this->headers = array();
     $this->header_names = array();
-    $this->method = $method;
-    $this->path = $path;
-    $this->version = $version;
-    $this->query = $query;
     
     $that = $this;
     foreach ( $headers as $key => $value) {
@@ -61,6 +42,14 @@ class Headers implements \ArrayAccess {
   
   public static function normalizeHeaderName( $name ){
     return strtolower( (string) $name );
+  }
+  
+  public function toArray(){
+    $export = array();
+    foreach( $this->headers as $key => $value ){
+      $export[$this->header_names[$key]] = $value;
+    }
+    return $export;
   }
 
 

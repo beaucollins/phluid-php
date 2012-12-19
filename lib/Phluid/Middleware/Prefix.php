@@ -17,22 +17,22 @@ class Prefix {
   }
     
   function __invoke( $request, $response, $next ){
-    if ( $request->prefix ) {
+    if ( property_exists( $request, 'prefix' ) ) {
       $ns = $request->prefix;
     } else {
       $ns = array();
     }
     $prefix = $this->prefix;
-    $path = strtolower( $request->path );
+    $path = strtolower( $request->getPath() );
     
     // if /prefix is the path or /prefix/ is strpos 0
     $match = true;
     if ( $prefix === $path ){
       array_push( $ns, $this->prefix );
-      $request->path = "/";
+      $request->setPath( "/" );
     } else if ( strpos( $path, $prefix . '/' ) === 0 ){
       array_push( $ns, $this->prefix );
-      $request->path = substr( $path, strlen( $prefix ) );
+      $request->setPath( substr( $path, strlen( $prefix ) ) );
     } else {
       $match = false;
     }
@@ -40,7 +40,7 @@ class Prefix {
     $next();
     if ( $match === true ) {
       array_pop( $ns );
-      $request->path = $prefix . $request->path;
+      $request->setPath( $prefix . $request->getPath() );
     }
     $request->prefix = $ns;
     
