@@ -2,7 +2,7 @@
 
 namespace Phluid;
 
-use Phluid\Http\Server;
+use React\Http\Server;
 use Phluid\Middleware\Router;
 use React\Http\ServerInterface as HttpServerInterface;
 use React\Socket\Server as SocketServer;
