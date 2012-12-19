@@ -47,6 +47,7 @@ class App extends EventEmitter {
       $request = new Request( $http_request );
       $response = new Response( $http_response, $request );
       $app( $request, $response );
+      
     });
     return $this;
   }
@@ -108,14 +109,7 @@ class App extends EventEmitter {
     } );
     
   }
-  
-  public function buildResponse( $request = null ){
-    return new Response( $request, array(
-      'view_path' => $this->view_path,
-      'default_layout' => $this->default_layout
-    ) );
-  }
-    
+
   /**
    * Adds the given middleware to the app's middleware stack. Returns $this for
    * chainable calls.
