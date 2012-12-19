@@ -11,7 +11,6 @@ class Response extends EventEmitter implements WritableStreamInterface {
   private $response;
   private $request;
   private $headers;
-  public $status;
   
   function __construct( HttpResponse $http_response, Request $request ){
     $this->request = $request;
@@ -62,12 +61,12 @@ class Response extends EventEmitter implements WritableStreamInterface {
   
   public function sendHeaders( $status_or_headers = 200, $headers = array() ){
     if ( !is_null( $status_or_headers ) and is_int( $status_or_headers ) ) {
-      $this->status = $status_or_headers;
+      $this->headers->status = $status_or_headers;
     } else if ( !is_null( $status_or_headers ) && is_array( $status_or_headers ) ) {
       $headers = $status_or_headers;
     }
     $this->setHeaders( $headers );
-    $this->writeHead( $this->status, $this->headers->toArray() );
+    $this->writeHead( $this->headers->status, $this->headers->toArray() );
   }
   
   public function render( $template, $locals = array(), $options = array() ){
@@ -80,7 +79,6 @@ class Response extends EventEmitter implements WritableStreamInterface {
   }
   
   public function renderText( $string, $content_type="text/plain", $status = 200 ){
-    $this->status_code = $status;
     $this->setHeader( 'Content-Type', $content_type );
     $this->setHeader( 'Content-Length', strlen( (string) $string ) );
     // write the headers and the body
