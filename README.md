@@ -1,6 +1,6 @@
 #Phluid
 
-A microframework for PHP. Quite heavily inspired by [Express][]. [![Build Status](https://secure.travis-ci.org/beaucollins/phluid-php.png?branch=http-rebuild)](https://travis-ci.org/beaucollins/phluid-php)
+A microframework for PHP. Quite heavily inspired by [Express][]. [![Build Status](https://secure.travis-ci.org/beaucollins/phluid-php.png?branch=master)](https://travis-ci.org/beaucollins/phluid-php)
 
 Built on top of [ReactPHP](https://github.com/reactphp/react).
 
@@ -31,7 +31,7 @@ Download [Phluid][] to a server somewhere.
 
     <?php
     
-    require 'path/to/lib/Phluid/Autoload.php';
+    require 'vendor/autoload.php';
         
     $app = new Phluid\App();
     
@@ -66,7 +66,7 @@ doesn't need to handle the request it can simply call `$next()`.
     // You can use a "closure"
     $app->inject( function( $request, $response, $next ){
       if( 0 === strpos( $request->path, '/admin/' ) ){
-        $response->redirect( '/login' );
+        $response->redirectTo( '/login' );
       } else {
         $next();
       }
@@ -74,7 +74,7 @@ doesn't need to handle the request it can simply call `$next()`.
     
     // You can use a string that contains the name of a function
     function server_header( $request, $response, $next ){
-      $request->setHeader( 'Served-By', 'Phluid' );
+      $response->setHeader( 'X-Served-By', 'Phluid' );
       $next();
     };
     $app->inject( 'server_header' );
@@ -151,8 +151,8 @@ for the view:
     
 ### Layouts
     
-Ok, I lied, it's not _only_ regular PHP, there's a little magic added behind
-the scenes too. Each view is executed in the context of a `\Phluid\ViewContext`
+Templates aren't _only_ regular PHP, there's a little magic added behind
+the scenes too. Each view is executed in the context of a `Phluid\ViewContext`
 instance which gives you some convenient templating methods to help you
 organize your content.
 
@@ -178,5 +178,5 @@ the content of the `home.php` view. To make this work you need to use the
     
 Since layouts are just views themselves, they too can have layouts.
 
-You can also define a default layout for all `\Phluid\Request::render` calls by
-providing the `\Phluid\App::default_layout` setting.
+You can also define a default layout for all `Phluid\Request::render` calls by
+providing the `Phluid\App::default_layout` setting.
