@@ -1,7 +1,7 @@
 <?php
 
 namespace Phluid;
-use Evenement\EventEmitter;
+use Evenement\EventEmitterInterface;
 
 class Utils {
   
@@ -16,7 +16,7 @@ class Utils {
     return bin2hex( openssl_random_pseudo_bytes( $length ) );
   }
   
-  static function forwardEvents( EventEmitter $to, EventEmitter $from, array $events ){
+  static function forwardEvents( EventEmitterInterface $to, EventEmitterInterface $from, array $events ){
     foreach( $events as $event ) {
       $from->on( $event, function() use( $event, $to ){
         $event_args = func_get_args();
