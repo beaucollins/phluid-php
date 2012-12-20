@@ -24,6 +24,10 @@ class Sessions {
   }
   
   function __invoke( $request, $response, $next ){
+    if ( !property_exists( $request, 'cookies' ) ){
+      echo "Warning! " . __CLASS__ . " requires Phluid\\Middleware\\Cookies" . PHP_EOL ;
+      return $next();
+    }
     if ( property_exists( $request, 'session' ) ) return $next();
     $request->sessionStore = $this->store;
     $request->sessionId = $sid = $this->getValidSessionId( $request );
