@@ -25,6 +25,7 @@ class Request extends EventEmitter implements ReadableStreamInterface {
     
     $request->on( 'end', function(){
       if ( !$this->ended ) {
+        $this->ended = true;
         $this->emit( 'end' );
       }
     });
