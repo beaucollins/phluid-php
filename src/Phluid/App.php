@@ -30,7 +30,10 @@ class App extends EventEmitter {
    **/
   public function __construct( $options = array() ){
     
-    $defaults = array( 'view_path' => realpath('.') . '/views' );
+    $defaults = array(
+      'view_path' => realpath('.') . '/views',
+      'env' => is_array( $_ENV ) && array_key_exists( 'PHLUID_ENV', $_ENV ) ? $_ENV['PHLUID_ENV'] : 'development'
+    );
     $this->settings = new Settings( array_merge( $defaults, $options ) );
     $this->router = new Router();
     
@@ -184,6 +187,21 @@ class App extends EventEmitter {
    */
   public function post( $path, $filters, $action = null ){
     return $this->handle( 'POST', $path, $filters, $action );
+  }
+  
+  public function configure( $env, $callback = null ){
+    if( func_num_args() == 2 ){
+      $env = is_array( $env ) ? $env : [$env];
+    } else {
+      // no environment specific so always run
+      $callback( $this );
+      return;
+    }
+    
+    if( in_array( $this->env, $env ) ){
+      $callback( $this );
+    }
+    
   }
     
 }

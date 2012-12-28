@@ -1,5 +1,6 @@
 <?php
 namespace Phluid\Test;
+use Phluid\App;
 
 class AppTest extends TestCase {
   
@@ -12,6 +13,36 @@ class AppTest extends TestCase {
     
   }
   
+  public function testAppConfigurations(){
+    $dev = false; $multi = false; $prod = false;
+    
+    $this->app->configure( 'development', function( $app ) use ( &$dev ){
+      $dev = true;
+    });
+    $this->app->configure( array( 'development', 'other' ), function( $app ) use ( &$multi ){
+      $multi = true;
+    });
+    $this->app->configure( 'production', function( $app ) use ( &$prod ){
+      $prod = true;
+    });
+    
+    $this->assertTrue( $dev );
+    $this->assertTrue( $multi );
+    $this->assertFalse( $prod );
+    
+  }
+  
+  public function testEnvironmentFromConstructor(){
+    $other = false;
+    
+    $app = new App( array( 'env' => 'other' ) );
+    $app->configure( 'other', function( $app ) use ( &$other ){
+      $other = true;
+    });
+    
+    $this->assertTrue( $other );
+  }
+    
   public function testAppRoute(){
         
     $response = $this->doRequest();
