@@ -30,7 +30,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     if ( !$action ){
      $request->close(); 
     } else {
-      $action( $request );
+      $action( $request, $response );
     }
     return $response;
   }
