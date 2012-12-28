@@ -42,6 +42,19 @@ class AppTest extends TestCase {
     
     $this->assertTrue( $other );
   }
+  
+  public function testEnvironmentFromGlobal(){
+    $other = false;
+    $_ENV['PHLUID_ENV'] = 'other';
+    
+    $app = new App();
+    $app->configure( 'other', function( $app ) use ( &$other ){
+      $other = true;
+    });
+    
+    $this->assertTrue( $other );
+    
+  }
     
   public function testAppRoute(){
         
