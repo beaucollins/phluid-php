@@ -6,8 +6,6 @@ use Phluid\Middleware\JsonBodyParser;
 use Phluid\Middleware\MultipartBodyParser;
 use Phluid\Middleware\FormBodyParser;
 
-require_once 'tests/helper.php';
-
 class BodyParserTest extends \Phluid\Test\TestCase {
   
   public function testJsonParsing(){

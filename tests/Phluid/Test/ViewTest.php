@@ -2,8 +2,6 @@
 
 namespace Phluid;
 
-require_once 'tests/helper.php';
-
 class ViewTest extends \PHPUnit_Framework_TestCase {
   
   public function setUp(){
