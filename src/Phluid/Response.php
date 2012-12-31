@@ -54,6 +54,10 @@ class Response extends EventEmitter implements WritableStreamInterface {
     return $this->headers->status;
   }
   
+  public function setStatus( $status ){
+    $this->headers->status = $status;
+  }
+  
   public function writeHead( $status = 200, array $headers = array() ){
     $this->response->writeHead( $status, $headers );
   }
