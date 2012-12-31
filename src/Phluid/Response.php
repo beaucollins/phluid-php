@@ -31,7 +31,7 @@ class Response extends EventEmitter implements WritableStreamInterface {
   public function setOptions( array $options ){
     $this->options = array_merge( $this->options, $options );
   }
-  
+    
   public function getHeaders(){
     return $this->headers;
   }
@@ -48,6 +48,10 @@ class Response extends EventEmitter implements WritableStreamInterface {
   
   public function setHeader( $key, $value ){
     $this->headers[$key] = $value;
+  }
+  
+  public function removeHeader( $header ){
+    unset( $this->headers[$header] );
   }
   
   public function getStatus(){
@@ -105,7 +109,7 @@ class Response extends EventEmitter implements WritableStreamInterface {
    * @author Beau Collins
    */
   public function eachHeader( $callback ){
-    foreach( $this->headers as $name => $value ){
+    foreach( $this->headers->toArray() as $name => $value ){
       $callback( $name, $value );
     }
   }
@@ -144,6 +148,15 @@ class Response extends EventEmitter implements WritableStreamInterface {
       $this->on( 'drain', $readFile );
       $readFile();
     }
+  }
+  
+  public function sendNotModified(){
+    $this->eachHeader( function( $header, $value ){
+      if( strpos( strtolower( $header ), 'content' ) == 0 )
+        $this->removeHeader( $header );
+    });
+    $this->sendHeaders( 304 );
+    $this->end();
   }
   
   public function isWritable(){
