@@ -12,15 +12,6 @@ class ResponseTest extends TestCase {
     $this->assertSame( 404, $response->getStatus() );
   }
   
-  function testNotModified(){
-    $response = $this->makeResponse();
-    $response->setHeader( 'Content-Type', 'text/html' );
-    $this->assertNotNull( $response->getHeader( 'Content-Type' ) );
-    $response->sendNotModified();
-    $this->assertSame( 304, $response->getStatus() );
-    $this->assertNull( $response->getHeader( 'Content-Type' ) );
-  }
-  
   function testSendFile(){
     $response = $this->makeResponse();
     $response->sendFile( $this->fileFixture( 'style.css' ) );

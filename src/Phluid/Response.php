@@ -137,11 +137,13 @@ class Response extends EventEmitter implements WritableStreamInterface {
       $this->setHeader( 'Last-Modified', $last_modified->format( \DateTime::RFC1123 ) );
       
       $this->setHeader( 'Content-Length', (string) filesize( $path ) );
-      $this->sendHeaders( $status );
+      $this->on( 'end', function() use ( $handle ){
+        fclose( $handle );
+      });
+      
       $readFile = function() use ( $handle ){
         while( $string = fread( $handle, 2048 ) ){
           if ( feof( $handle ) ) {
-            fclose( $handle );
             $this->end( $string );
             return;
           } else {
@@ -150,19 +152,11 @@ class Response extends EventEmitter implements WritableStreamInterface {
         }
       };
       $this->on( 'drain', $readFile );
+      $this->sendHeaders( $status );
       $readFile();
     } else {
       $this->sendHeaders( 404 );
     }
-  }
-  
-  public function sendNotModified(){
-    $this->eachHeader( function( $header, $value ){
-      if( strpos( strtolower( $header ), 'content' ) == 0 )
-        $this->removeHeader( $header );
-    });
-    $this->sendHeaders( 304 );
-    $this->end();
   }
   
   public function isWritable(){
