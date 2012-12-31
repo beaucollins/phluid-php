@@ -21,7 +21,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
   
   public function doRequest( $method = 'GET', $path = '/', $query = array(), $headers = array(), $action = false ){
     
-    $this->request = $request = $this->makeRequest( $method, $path, $query, $headers );
+    $request = $this->makeRequest( $method, $path, $query, $headers );
     $request->method = $method;
     $request->path = $path;
     $http_response = new HttpResponse( $this->connection );
@@ -37,7 +37,8 @@ class TestCase extends \PHPUnit_Framework_TestCase {
   
   public function makeRequest( $method = 'GET', $path = '/', $query = array(), $headers = array() ){
     $request = new HttpRequest( $method, $path, $query, '1.1', $headers );
-    return new Request( $request );
+    $this->request = new Request( $request );
+    return $this->request;
   }
   
   public function send( $body = null ){
@@ -63,6 +64,10 @@ class TestCase extends \PHPUnit_Framework_TestCase {
   
   public function getBody(){
     return $this->response->data;
+  }
+  
+  public function fileFixture( $file ){
+    return realpath('.') . '/tests/files/' . $file;
   }
   
 }

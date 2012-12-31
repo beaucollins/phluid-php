@@ -115,7 +115,6 @@ class Response extends EventEmitter implements WritableStreamInterface {
   }
   
   public function sendFile( $path, $options_or_status = array(), $status = 200 ){
-    // TODO: handle if a file doesn't exist or isn't readable
     if ( is_int( $options_or_status )) {
       $status = $options_or_status;
       $options = array();
@@ -131,9 +130,14 @@ class Response extends EventEmitter implements WritableStreamInterface {
       }
       $this->setHeader( 'Content-Disposition', $disposition );
     }
-    $this->setHeader( 'Content-Length', filesize( $path ) );
-    $this->sendHeaders( $status );
-    if( $handle = fopen( $path, 'r' ) ){
+    if( is_readable( $path ) ){
+      $handle = fopen( $path, 'r' );
+      $info = fstat( $handle );
+      $last_modified = \DateTime::createFromFormat( 'U', $info['mtime'] );
+      $this->setHeader( 'Last-Modified', $last_modified->format( \DateTime::RFC1123 ) );
+      
+      $this->setHeader( 'Content-Length', (string) filesize( $path ) );
+      $this->sendHeaders( $status );
       $readFile = function() use ( $handle ){
         while( $string = fread( $handle, 2048 ) ){
           if ( feof( $handle ) ) {
@@ -147,6 +151,8 @@ class Response extends EventEmitter implements WritableStreamInterface {
       };
       $this->on( 'drain', $readFile );
       $readFile();
+    } else {
+      $this->sendHeaders( 404 );
     }
   }
   
