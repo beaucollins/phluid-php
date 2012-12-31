@@ -16,8 +16,7 @@ class ResponseTest extends TestCase {
     $response = $this->makeResponse();
     $response->sendFile( $this->fileFixture( 'style.css' ) );
     
-    $lastModified = 'Sun, 02 Dec 2012 06:22:15 +0000';
-    $this->assertSame( $response->getHeader( 'last-modified' ), $lastModified );
+    $this->assertNotNull( $response->getHeader( 'last-modified' ) );
     $this->assertSame( $response->getHeader( 'content-length'), '11' );
   }
   
