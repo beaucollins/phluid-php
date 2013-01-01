@@ -12,22 +12,16 @@ Built on top of [ReactPHP](https://github.com/reactphp/react).
 
     {
       "name" : "beaucollins/sample-app",
-      "repositories" : [
-        {
-          "type" : "git",
-          "url" : "https://github.com/beaucollins/phluid-php"
-        }
-      ],
       "require" : {
-        "phluid/phluid":"react-dev"
+        "phluid/phluid":"master-dev"
       }
     }
 
-[Composer]: http://google.com/?q=composer%20php "Google Search: composer php"
+[Composer]: http://getcomposer.org "Composer: PHP dependency manager"
 
 ## Example
 
-Download [Phluid][] to a server somewhere. 
+Add Phluid to your `composer.json` and `$> composer install`. Throw this into `server.php`:
 
     <?php
     
@@ -48,7 +42,7 @@ Download [Phluid][] to a server somewhere.
     $app->listen( 4000 );
     
     
-Save that to `server.php` and then boot up your server:
+Then boot up your server from the command line:
 
     $> php server.php
   
@@ -95,6 +89,36 @@ There are quite a few middlewares provided already:
 - Prefix: Mounts middleware under a prefix 
 - RequestTimer: Records time for the full request/response cycle
 - StaticFiles: Serves static files from a specified folder
+- Cookies: Parsing cookie request header and sending set-cookie response headers
+- Sessions: Stateful data based on a session id cookie, pluggable session storage mechanism
+- Cache: Implements `If-Modified-Since` and `If-None-Match` conditional GET requests
+
+
+### Configurations
+
+It may be useful to have different configurations depending on your application's environment (e.g. "production" vs "development").
+
+For instance, when developing locally it may be easier to use the `Sessions\MemoryStore` to handle session persistence while the production environment would require something more robust like `Sessions\PredisStore`. To make this configuration more explicit use `Phluid\App::configure`:
+
+    <?php
+    
+    $app->configure( 'production', function( $app ){
+      $predis_client = use Predis\Async\Client( $host, $port );
+      $app->inject( new Phluid\Middleware\Sessions( array(
+        'store' => new Phluid\Middleware\PredisStore( $predis_client ),
+        'secret' => 'asdfasiu38fhw998hfsoih908s'
+      ) ) );
+    });
+    
+    $app->configure( 'development', function( $app ){
+      $app
+        ->inject( new Phluid\Middleware\ExceptionHandler() )
+        ->inject( new Phluid\Middleware\Sessions( array(
+          'secret' => 'protects-sessions'
+        ) ) );
+    });
+    
+By default `Phluid\App` while use `development` for it's environment but this cay be changed by using the `PHLUID_ENV` environment variable or providing the environment to the `Phluid\App::__construct` method.
 
 ## Filters
 
