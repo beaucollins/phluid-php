@@ -17,6 +17,8 @@ class Response extends EventEmitter implements WritableStreamInterface {
     $this->response = $http_response;
     $this->headers = new ResponseHeaders( 200, 'Success' );
     Utils::forwardEvents( $this, $http_response, array( 'error', 'end', 'drain' ) );
+    $date = new \DateTime( 'now' );
+    $this->setHeader( 'Date', $date->format( \DateTime::RFC1123 ) );
     
   }
   

@@ -12,6 +12,13 @@ class ResponseTest extends TestCase {
     $this->assertSame( 404, $response->getStatus() );
   }
   
+  function testResponseDate(){
+    $response = $this->makeResponse();
+    $this->assertNotNull( $response->getHeader( 'Date' ) );
+    $now = new \DateTime( 'now' );
+    $this->assertSame( $response->getHeader( 'Date' ), $now->format( \DateTime::RFC1123 ) );
+  }
+  
   function testSendFile(){
     $response = $this->makeResponse();
     $response->sendFile( $this->fileFixture( 'style.css' ) );
