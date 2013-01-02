@@ -12,7 +12,7 @@ class Utils {
     return $default;
   }
   
-  static function uid( $length ){
+  static function uid( $length = 32 ){
     return bin2hex( openssl_random_pseudo_bytes( $length ) );
   }
   
