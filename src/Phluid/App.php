@@ -32,7 +32,7 @@ class App extends EventEmitter {
     
     $defaults = array(
       'view_path' => realpath('.') . '/views',
-      'env' => is_array( $_ENV ) && array_key_exists( 'PHLUID_ENV', $_ENV ) ? $_ENV['PHLUID_ENV'] : 'development'
+      'env' => getenv("PHLUID_ENV") ?: 'development'
     );
     $this->settings = new Settings( array_merge( $defaults, $options ) );
     $this->router = new Router();
