@@ -45,7 +45,7 @@ class AppTest extends TestCase {
   
   public function testEnvironmentFromGlobal(){
     $other = false;
-    putenv('PHLUID_ENV') = 'other';
+    putenv( 'PHLUID_ENV=other' );
     
     $app = new App();
     $app->configure( 'other', function( $app ) use ( &$other ){
