@@ -5,7 +5,7 @@ class FormBodyParser {
   
   function __invoke( $request, $response, $next ){
         
-    if ( $request->getHeader('Content-Type') == 'application/x-www-form-urlencoded' ) {
+    if ( strpos($request->getHeader('Content-Type'),'application/x-www-form-urlencoded')===0 ) {
       $body = "";
       $request->on( 'data', function( $data ) use ( &$body ){
         $body .= $data;
