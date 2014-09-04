@@ -23,24 +23,25 @@ Built on top of [ReactPHP](https://github.com/reactphp/react).
 
 Add Phluid to your `composer.json` and `$> composer install`. Throw this into `server.php`:
 
-    <?php
+```php
+<?php
+
+require 'vendor/autoload.php';
     
-    require 'vendor/autoload.php';
-        
-    $app = new Phluid\App();
-    
-    // add some handlers
-    
-    $app->get( '/', function( $request, $response ){
-      $response->renderText( 'Hello World' );
-    });
-    
-    $app->get( '/hello/:name', function( $request, $response ){
-      $response->renderText( "Hello {$request->param('name')}");
-    });
-    
-    $app->listen( 4000 );
-    
+$app = new Phluid\App();
+
+// add some handlers
+
+$app->get( '/', function( $request, $response ){
+  $response->renderText( 'Hello World' );
+});
+
+$app->get( '/hello/:name', function( $request, $response ){
+  $response->renderText( "Hello {$request->param('name')}");
+});
+
+$app->listen( 4000 );
+```
     
 Then boot up your server from the command line:
 
@@ -57,27 +58,29 @@ Any invocable PHP object can be used as a middleware. It receives three
 arguments: `$request`, `$response`, and `$next`. If the middleware decides it
 doesn't need to handle the request it can simply call `$next()`.
 
-    // You can use a "closure"
-    $app->inject( function( $request, $response, $next ){
-      if( 0 === strpos( $request->path, '/admin/' ) ){
-        $response->redirectTo( '/login' );
-      } else {
-        $next();
-      }
-    });
-    
-    // You can use a string that contains the name of a function
-    function server_header( $request, $response, $next ){
-      $response->setHeader( 'X-Served-By', 'Phluid' );
-      $next();
-    };
-    $app->inject( 'server_header' );
-    
-    // Any callable works, so you use an object if you like
-    $warden = new Warden();
-    $app->inject( array( $warden, 'protect' ) );
-    // calls $warden->protect( $request, $response, $next )
-    
+```php
+// You can use a "closure"
+$app->inject( function( $request, $response, $next ){
+  if( 0 === strpos( $request->path, '/admin/' ) ){
+    $response->redirectTo( '/login' );
+  } else {
+    $next();
+  }
+});
+
+// You can use a string that contains the name of a function
+function server_header( $request, $response, $next ){
+  $response->setHeader( 'X-Served-By', 'Phluid' );
+  $next();
+};
+$app->inject( 'server_header' );
+
+// Any callable works, so you use an object if you like
+$warden = new Warden();
+$app->inject( array( $warden, 'protect' ) );
+// calls $warden->protect( $request, $response, $next )
+```
+
 There are quite a few middlewares provided already:
 
 - BasicAuth: add's support for HTTP Basic Auth header parsing
@@ -100,24 +103,26 @@ It may be useful to have different configurations depending on your application'
 
 For instance, when developing locally it may be easier to use the `Sessions\MemoryStore` to handle session persistence while the production environment would require something more robust like `Sessions\PredisStore`. To make this configuration more explicit use `Phluid\App::configure`:
 
-    <?php
-    
-    $app->configure( 'production', function( $app ){
-      $predis_client = use Predis\Async\Client( $host, $port );
-      $app->inject( new Phluid\Middleware\Sessions( array(
-        'store' => new Phluid\Middleware\PredisStore( $predis_client ),
-        'secret' => 'asdfasiu38fhw998hfsoih908s'
-      ) ) );
-    });
-    
-    $app->configure( 'development', function( $app ){
-      $app
-        ->inject( new Phluid\Middleware\ExceptionHandler() )
-        ->inject( new Phluid\Middleware\Sessions( array(
-          'secret' => 'protects-sessions'
-        ) ) );
-    });
-    
+```php
+<?php
+
+$app->configure( 'production', function( $app ){
+  $predis_client = use Predis\Async\Client( $host, $port );
+  $app->inject( new Phluid\Middleware\Sessions( array(
+    'store' => new Phluid\Middleware\PredisStore( $predis_client ),
+    'secret' => 'asdfasiu38fhw998hfsoih908s'
+  ) ) );
+});
+
+$app->configure( 'development', function( $app ){
+  $app
+    ->inject( new Phluid\Middleware\ExceptionHandler() )
+    ->inject( new Phluid\Middleware\Sessions( array(
+      'secret' => 'protects-sessions'
+    ) ) );
+});
+```
+
 By default `Phluid\App` while use `development` for it's environment but this cay be changed by using the `PHLUID_ENV` environment variable or providing the environment to the `Phluid\App::__construct` method.
 
 ## Filters
@@ -125,53 +130,60 @@ By default `Phluid\App` while use `development` for it's environment but this ca
 Instead of providing middleware for every request, middleware can be added to
 specific routes:
 
-    // class AwesomeSauce implements __invoke( $request, $response, $next )
-    $awesome = new AwesomeSauce( 'config' );
-    $app->get( '/admin/', $awesome, function( $request, $response ){
-      $response->renderText( 'Hello World' );
-    } );
-    // $awesome->__invoke( $req, $res, $next ) is called before the action
+```
+// class AwesomeSauce implements __invoke( $request, $response, $next )
+$awesome = new AwesomeSauce( 'config' );
+$app->get( '/admin/', $awesome, function( $request, $response ){
+  $response->renderText( 'Hello World' );
+} );
+// $awesome->__invoke( $req, $res, $next ) is called before the action
+```
     
 Passing an `array` of middlewares will execute each middleware for that route:
 
-    $filters = array(
-      // calls RequestLogger::__invoke instance method
-      new RequestLogger( "/var/log/phluid" ),
-      // calls  RequestLogger::logRequest instance method
-      array( new RequestLogger(), 'logRequest' ),
-      // calls RequestLogger::someMethod
-      array( 'RequestLogger', 'someMethod' ),
-      // call logRequest() global function
-      'logRequest'
-    );
-    
-    $app->get( '/logout', $filters, function( $request, $response, $next ){
-      $request->session->user = null;
-      $response->renderText( "Goodbye." );
-    } );
-    
+```
+$filters = array(
+  // calls RequestLogger::__invoke instance method
+  new RequestLogger( "/var/log/phluid" ),
+  // calls  RequestLogger::logRequest instance method
+  array( new RequestLogger(), 'logRequest' ),
+  // calls RequestLogger::someMethod
+  array( 'RequestLogger', 'someMethod' ),
+  // call logRequest() global function
+  'logRequest'
+);
+
+$app->get( '/logout', $filters, function( $request, $response, $next ){
+  $request->session->user = null;
+  $response->renderText( "Goodbye." );
+} );
+```    
 ## Templating
 
 Phluid comes with a pretty basic templating system. Given a route like this in
 a file named `index.php`:
 
-    $app->get( '/', function( $req, $res ){
-      $current_user = findCurrentUser();
-      $res->render( 'home', array( 'user' => $current_user ) );
-    });
+```
+$app->get( '/', function( $req, $res ){
+  $current_user = findCurrentUser();
+  $res->render( 'home', array( 'user' => $current_user ) );
+});
+```
 
 Phluid will look in a folder named `views` in the same directory as the
 `index.php` for a file named `home.php` to use as the template. This file is
 interpreted as regular old PHP with the `array` extracted into local variables
 for the view:
 
-    <!DOCTYPE html>
-    <head>
-    
-    </head>
-    <body>
-      <?php echo strrev( 'dlrow olleh' ) ?>, <?php echo $user->username ?>
-    </body>
+```php
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+  <?php echo strrev( 'dlrow olleh' ) ?>, <?php echo $user->username ?>
+</body>
+```
     
 ### Layouts
     
@@ -185,20 +197,24 @@ boilerplate HTML in one file and you just want to render the view into that
 file. In your view you can call `$this->layout` to tell the templating system
 which layout to render the view into. So if you change your `home.php` to:
 
-    <?php $this->layout( 'public' ) ?>
-    <?php echo strrev( 'dlrow olleh' ) ?>, <?php echo $user->username ?>
+```php
+<?php $this->layout( 'public' ) ?>
+<?php echo strrev( 'dlrow olleh' ) ?>, <?php echo $user->username ?>
+```
 
 The templating system will then look for a `public.php` file and render it with
 the content of the `home.php` view. To make this work you need to use the
 `content` template method in your layout:
 
-    <!DOCTYPE html>
-    <head>
-    
-    </head>
-    <body>
-      <?php echo $this->content() ?>
-    </body>
+```php
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+  <?php echo $this->content() ?>
+</body>
+```
     
 Since layouts are just views themselves, they too can have layouts.
 
