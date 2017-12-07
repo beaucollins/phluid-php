@@ -5,8 +5,9 @@ use React\Http\Request as HttpRequest;
 use React\Http\Response as HttpResponse;
 use Phluid\Request;
 use Phluid\Response;
+use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
-class TestCase extends \PHPUnit_Framework_TestCase {
+class TestCase extends PHPUnitTestCase {
   
   function setUp(){
     
