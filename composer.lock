@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ade2311dbf8a045fddc623ebba702bd4",
+    "content-hash": "557c4d4bde9b09debcbda95dc6bcae63",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -515,16 +515,16 @@
         },
         {
             "name": "react/react",
-            "version": "dev-master",
+            "version": "v0.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/react.git",
-                "reference": "cda8fd84b2b89ea0a59838765ee86b447c0b8a9f"
+                "reference": "457b6b8a16a37c11278cac0870d6d2ff911c5765"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/react/zipball/cda8fd84b2b89ea0a59838765ee86b447c0b8a9f",
-                "reference": "cda8fd84b2b89ea0a59838765ee86b447c0b8a9f",
+                "url": "https://api.github.com/repos/reactphp/react/zipball/457b6b8a16a37c11278cac0870d6d2ff911c5765",
+                "reference": "457b6b8a16a37c11278cac0870d6d2ff911c5765",
                 "shasum": ""
             },
             "require": {
@@ -537,12 +537,10 @@
                 "react/http-client": "0.4.*",
                 "react/promise": "~2.1",
                 "react/socket": "0.4.*",
-                "react/socket-client": "^0.5.3",
+                "react/socket-client": "0.4.*",
                 "react/stream": "0.4.*"
             },
             "require-dev": {
-                "clue/block-react": "^1.1",
-                "clue/stream-filter": "^1.3",
                 "phpunit/phpunit": "~4.0"
             },
             "suggest": {
@@ -566,7 +564,7 @@
                 "event-loop",
                 "reactor"
             ],
-            "time": "2017-10-22T18:13:28+00:00"
+            "time": "2014-12-11T02:06:55+00:00"
         },
         {
             "name": "react/socket",
@@ -612,30 +610,31 @@
         },
         {
             "name": "react/socket-client",
-            "version": "v0.5.3",
+            "version": "v0.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/socket-client.git",
-                "reference": "5570838d436f056695e9a5eaf01dd5f80386dd26"
+                "reference": "49e730523b73d912e56f7a41f53ed3fc083ae167"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/socket-client/zipball/5570838d436f056695e9a5eaf01dd5f80386dd26",
-                "reference": "5570838d436f056695e9a5eaf01dd5f80386dd26",
+                "url": "https://api.github.com/repos/reactphp/socket-client/zipball/49e730523b73d912e56f7a41f53ed3fc083ae167",
+                "reference": "49e730523b73d912e56f7a41f53ed3fc083ae167",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0",
-                "react/dns": "0.4.*|0.3.*",
-                "react/event-loop": "0.4.*|0.3.*",
-                "react/promise": "^2.1 || ^1.2",
-                "react/promise-timer": "~1.0",
-                "react/stream": "^0.4.5"
-            },
-            "require-dev": {
-                "clue/block-react": "^1.1"
+                "php": ">=5.4.0",
+                "react/dns": "0.4.*",
+                "react/event-loop": "0.4.*",
+                "react/promise": "~2.0",
+                "react/stream": "0.4.*"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.4-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "React\\SocketClient\\": "src"
@@ -649,7 +648,7 @@
             "keywords": [
                 "Socket"
             ],
-            "time": "2016-12-24T11:19:15+00:00"
+            "time": "2016-12-06T10:54:49+00:00"
         },
         {
             "name": "react/stream",
@@ -2112,9 +2111,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "react/react": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
