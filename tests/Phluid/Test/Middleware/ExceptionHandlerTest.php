@@ -3,9 +3,11 @@
 namespace Phluid\Middleware;
 use Phluid\Request;
 use Phluid\App;
+use PHPUnit\Framework\DOMTestTrait;
 
 class ExceptionHandlerTest extends \Phluid\Test\TestCase {
-  
+  use DOMTestTrait;
+
   function testRenderTemplate(){
     
     $handler = new ExceptionHandler();
@@ -19,7 +21,7 @@ class ExceptionHandlerTest extends \Phluid\Test\TestCase {
     });
     
     $response = $this->doRequest( 'GET', '/gone' );
-    $this->assertTag( array( 'tag' => 'title', 'content' => 'Application Error:' ), $this->getBody() );
+    $this->assertSelectEquals( 'title', 'Application Error:', true, $this->getBody() );
     
   }
   
