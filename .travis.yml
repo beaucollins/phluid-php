@@ -1,6 +1,6 @@
 language: php
 php:
-  - 5.4
+  - 5
   - 7
 before_script:
   - curl -s http://getcomposer.org/installer | php
