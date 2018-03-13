@@ -3,7 +3,7 @@
   "description" : "A PHP microframework",
   "homepage" : "http://github.com/beaucollins/phluid-php",
   "license" : "MIT",
-  "version" : "0.1.0",
+  "version" : "0.2.0",
   "authors" : [
   {
     "name" : "Beau Collins",
@@ -13,7 +13,7 @@
   ],
   "require" : {
     "php" : ">=5.3",
-    "react/react": ">=0.4"
+    "react/react": "^0.3"
   },
   "require-dev" : {
     "phpunit/phpunit" : "~4",
