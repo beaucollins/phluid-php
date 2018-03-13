@@ -1,0 +1,8 @@
+{
+    "name": "phluid/site-example",
+    "description": "Example phluid site",
+    "type": "project",
+    "require": {
+        "phluid/phluid": "^0.1.1"
+    }
+}
