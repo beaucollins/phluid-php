@@ -16,7 +16,7 @@
     "react/react": "^0.3"
   },
   "require-dev" : {
-    "phpunit/phpunit" : "7"
+    "phpunit/phpunit" : "^7.5"
   },
   "autoload": {
       "psr-0": {
