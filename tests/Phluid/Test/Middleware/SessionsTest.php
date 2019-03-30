@@ -41,10 +41,10 @@ class SessionsTest extends TestCase {
     
   }
   
-  function setUp(){
-    
-    parent::setUp();
-    
+  /**
+   * @before
+   */
+  function injectCookies(){
     $this->app->inject( new Cookies() );
     $session_store = new SessionsMemoryStore( array( 'testsession' => array( 'hello' => 'world' ) ) );
     $this->sessions = new Sessions( array( 'secret' => 'lol', 'store' => $session_store  ) );

@@ -14,7 +14,7 @@ class Cookies {
     $response->cookies = new CookieJar();
     $response->on( 'headers', function() use ( $response ){
       if( $value = $response->cookies->headerValues() ){
-        $response->setHeader( 'Set-Cookie',  $value );        
+        $response->setHeader( 'Set-Cookie',  $value );
       }
     });
     $next();

@@ -5,8 +5,10 @@ use Phluid\Test\TestCase;
 
 class StaticFileTest extends TestCase {
   
-  function setUp(){
-    parent::setUp();
+  /**
+   * @before
+   */
+  function injectStaticFiles(){
     $this->file_path = realpath('.') . '/tests/files';
     $static_files = new StaticFiles( $this->file_path );
     $this->app->inject( $static_files );
@@ -83,10 +85,10 @@ class StaticFileTest extends TestCase {
         
     $size = filesize( $this->file_path . '/hello_world.txt' );
     
-    $this->assertContains( "Content-Range: bytes 10-23/$size", $response->data );
+    $this->assertStringContainsString( "Content-Range: bytes 10-23/$size", $response->data );
     $start = $size - 10;
     $end = $size - 1;
-    $this->assertContains( "Content-Range: bytes $start-$end/$size", $response->data );
+    $this->assertStringContainsString( "Content-Range: bytes $start-$end/$size", $response->data );
     
     $boundary = substr( $response->getHeader( 'Content-Type' ), strlen( "multipart/byteranges; boundary=" ) );
     $parts = array_slice( explode( "--$boundary", trim( $response->data ) ), 1, -1 );

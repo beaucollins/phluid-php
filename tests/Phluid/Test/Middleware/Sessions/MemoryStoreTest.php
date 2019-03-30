@@ -2,9 +2,12 @@
 namespace Phluid\Test\Middleware\Sessions;
 use Phluid\Middleware\Sessions\MemoryStore;
 
-class MemoryStoreTest extends \PHPUnit_Framework_TestCase {
+class MemoryStoreTest extends \PHPUnit\Framework\TestCase {
   
-  function setUp(){
+  /**
+   * @before
+   */
+  function setUpMemoryStore(){
     $this->store = new MemoryStore();
   }
   

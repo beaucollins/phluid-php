@@ -57,10 +57,6 @@ class ExceptionHandler {
 
 namespace Phluid\Middleware\ExceptionHandler;
 
-function hello_world(){
-  return 'Hello World';
-}
-
 function common_path( $path, $root ){
   if ( strpos( $path, $root ) == 0 ) {
     return substr( $path, strlen( $root ) );
