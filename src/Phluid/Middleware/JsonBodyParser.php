@@ -16,7 +16,7 @@ class JsonBodyParser {
   
   //Just JSON
   function __invoke( $request, $response, $next ){
-    if ( $request->getContentType() == 'application/json' || explode(";", $request->getContentType())[0] == 'application/json') {
+    if ( strpos($request->getHeader('Content-Type'),'application/json')===0 ){
       $body = "";
       $request->on( 'data', function( $data ) use ( &$body ){
         $body .= $data;
