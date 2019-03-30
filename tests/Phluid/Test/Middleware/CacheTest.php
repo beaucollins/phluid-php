@@ -5,9 +5,10 @@ use Phluid\Middleware\Cache;
 use Phluid\Middleware\StaticFiles;
 
 class CacheTest extends TestCase {
-  
-  function setUp(){
-    parent::setUp();
+  /**
+   * @before
+   */
+  function injectCache(){
     $this->app->inject( new Cache() );
     $this->app->inject( new StaticFiles( realpath('.') . '/tests/files' ) );
   }

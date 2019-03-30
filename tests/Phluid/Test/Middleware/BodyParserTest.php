@@ -28,6 +28,25 @@ class BodyParserTest extends \Phluid\Test\TestCase {
     
   }
   
+  public function testJsonParsingWithCharset() {
+    
+    $thing = new \stdClass();
+    $thing->awesome = "YES";
+    
+    $parser = new JsonBodyParser( false );
+    $this->app->inject( $parser );
+    
+    $body = json_encode( $thing );
+    $response = $this->doRequest( 'POST', '/', array(), array(
+      'Content-Type' => 'application/json; charset=UTF-8',
+      'Content-Length' => strlen( $body )
+    ), function( $request ) use ( $body ){
+      $this->send( $body );
+    } );
+        
+    $this->assertSame( $thing->awesome, $this->request->body->awesome );
+  }
+  
   public function testFormParsing(){
     
     $parser = new FormBodyParser();
@@ -106,8 +125,10 @@ class BodyParserTest extends \Phluid\Test\TestCase {
     $this->assertObjectNotHasAttribute( 'body', $this->request );
   }
   
-  function setUp(){
-    parent::setUp();
+  /**
+   * @before 
+   */
+  function runRequest(){
     $this->app->post( '/', function( $request, $response ){
       $response->renderText( "done" );
     } );

@@ -8,8 +8,10 @@ use Phluid\Response;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
 class TestCase extends PHPUnitTestCase {
-  
-  function setUp(){
+  /**
+   * @before
+   */
+  function setUpConnection(){
     
     $this->connection = new Connection();
     $this->app = new App();

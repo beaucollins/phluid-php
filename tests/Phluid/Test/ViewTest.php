@@ -2,9 +2,12 @@
 
 namespace Phluid;
 
-class ViewTest extends \PHPUnit_Framework_TestCase {
-  
-  public function setUp(){
+class ViewTest extends \PHPUnit\Framework\TestCase {
+
+  /**
+   * @before
+   */
+  public function setUpViewPach(){
     $this->view_path = realpath('.') . '/tests/Views';
   }
   
