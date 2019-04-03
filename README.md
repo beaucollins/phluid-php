@@ -1,4 +1,4 @@
-#Phluid
+# Phluid
 
 A microframework for PHP. Quite heavily inspired by [Express][]. [![Build Status](https://secure.travis-ci.org/beaucollins/phluid-php.png?branch=master)](https://travis-ci.org/beaucollins/phluid-php)
 
