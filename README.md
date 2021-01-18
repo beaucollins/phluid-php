@@ -130,7 +130,7 @@ By default `Phluid\App` while use `development` for it's environment but this ca
 Instead of providing middleware for every request, middleware can be added to
 specific routes:
 
-```
+```php
 // class AwesomeSauce implements __invoke( $request, $response, $next )
 $awesome = new AwesomeSauce( 'config' );
 $app->get( '/admin/', $awesome, function( $request, $response ){
@@ -141,7 +141,7 @@ $app->get( '/admin/', $awesome, function( $request, $response ){
     
 Passing an `array` of middlewares will execute each middleware for that route:
 
-```
+```php
 $filters = array(
   // calls RequestLogger::__invoke instance method
   new RequestLogger( "/var/log/phluid" ),
@@ -163,7 +163,7 @@ $app->get( '/logout', $filters, function( $request, $response, $next ){
 Phluid comes with a pretty basic templating system. Given a route like this in
 a file named `index.php`:
 
-```
+```php
 $app->get( '/', function( $req, $res ){
   $current_user = findCurrentUser();
   $res->render( 'home', array( 'user' => $current_user ) );
